@@ -17,8 +17,8 @@
     {
       "id": "spawner-protect",
       "name": "Spawner Protect",
-      "icon": "spawner",
-      "accent": "255, 138, 61",
+      "icon": "shield",
+      "accent": "226, 232, 240",
       "featured": true,
       "badges": [
         "New",
@@ -70,7 +70,7 @@
     {
       "id": "rig-master",
       "name": "Rig Master",
-      "icon": "rig",
+      "icon": "map",
       "accent": "255, 77, 109",
       "featured": false,
       "badges": [],
