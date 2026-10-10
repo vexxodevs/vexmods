@@ -132,9 +132,36 @@
   .log .bad { color: #ff8fa3; }
   .log a { color: var(--violet-soft); text-decoration: underline; }
 
+  .tagp.upd { color: var(--amber); border-color: rgba(var(--amber-rgb), .4); background: rgba(var(--amber-rgb), .08); }
+  .upd-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 14px; border-radius: 13px; border: 1px solid var(--hairline); background: rgba(255,255,255,.025); }
+  .upd-row.on { border-color: rgba(var(--amber-rgb), .45); background: rgba(var(--amber-rgb), .07); }
+  .upd-row small { color: var(--text-faint); font-size: .8rem; }
+  .switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .switch input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; margin: 0; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--glass-3); border: 1px solid var(--hairline-bright); transition: background .25s; }
+  .switch span::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-dim); transition: transform .3s var(--spring), background .25s; }
+  .switch input:checked + span { background: rgba(var(--amber-rgb), .35); border-color: rgba(var(--amber-rgb), .6); }
+  .switch input:checked + span::after { transform: translateX(20px); background: var(--amber); }
+  .switch input:focus-visible + span { outline: 2px solid var(--violet-soft); outline-offset: 2px; }
+
+  /* Activity */
+  .act-top { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .act-top .field { margin: 0; flex: 1; min-width: 200px; max-width: 320px; }
+  .act-list { display: grid; gap: 8px; }
+  .act { display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 14px; }
+  .act-ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; color: rgb(var(--k)); background: rgba(var(--k), .12); border: 1px solid rgba(var(--k), .3); }
+  .act-ic .ic { width: 17px; height: 17px; }
+  .act-t { flex: 1; min-width: 0; }
+  .act-t b { display: block; font-weight: 600; font-size: .93rem; }
+  .act-t small { color: var(--text-faint); font-size: .8rem; }
+  .act-t small strong { color: var(--text-dim); font-weight: 600; }
+  .act a.iconbtn { flex-shrink: 0; }
+  .act-day { font-family: var(--f-display); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin: 14px 0 2px 4px; }
+  .act-day:first-child { margin-top: 0; }
+
   @media (max-width: 820px) {
     .adm-grid { grid-template-columns: 1fr; }
-    .tabs { position: static; grid-template-columns: repeat(4, 1fr); padding: 6px; }
+    .tabs { position: static; grid-template-columns: repeat(5, 1fr); padding: 6px; }
     .tab { justify-content: center; padding: 10px 6px; font-size: .82rem; flex-direction: column; gap: 4px; }
     .row2 { grid-template-columns: 1fr; }
     .med-tags { display: none; }
@@ -152,6 +179,8 @@
   <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2 20.5h20L12 3.5Z"/><path d="M12 10v4.5M12 17.5h.01"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-spider" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 15 7 10.5 3.5 12M12 18 5 16.5 1.5 19.5M12 21 5.5 23.5 3.5 28M13 23.5 9 28.5 8 31.5M19.5 15 25 10.5 28.5 12M20 18l7-1.5 3.5 3M20 21l6.5 2.5 2 4.5M19 23.5l4 5 1 3"/></g><ellipse fill="currentColor" cx="16" cy="19.5" rx="5" ry="6"/><circle fill="currentColor" cx="16" cy="11.5" r="3.6"/><circle fill="#ff7a1a" cx="14.6" cy="11" r=".85"/><circle fill="#ff7a1a" cx="17.4" cy="11" r=".85"/></symbol>
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -214,6 +243,9 @@
         <label class="field"><span>GitHub access token</span>
           <input class="in" type="password" id="token" placeholder="github_pat_…" required spellcheck="false">
         </label>
+        <label class="field"><span>Your name <small>(optional)</small></span>
+          <input class="in" id="name" placeholder="e.g. Jimmy" maxlength="30"><small>Shown in the activity log so you can tell who changed what.</small>
+        </label>
         <details class="adv">
           <summary>Repository settings</summary>
           <div class="row2">
@@ -231,7 +263,7 @@
         <ol>
           <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
           <li>Name it <b>Vexxo admin</b> and pick an expiry (e.g. 1 year).</li>
-          <li>Repository access: <b>Only select repositories</b> → choose <b id="help-repo">vexxomods</b>.</li>
+          <li>Repository access: <b>Only select repositories</b> → choose <b id="help-repo">vexmods</b>.</li>
           <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
           <li>Click <b>Generate token</b>, copy it, and paste it above.</li>
         </ol>
@@ -246,6 +278,7 @@
         <button class="tab" data-tab="announce"><svg class="ic"><use href="#i-bell"/></svg>Announcement</button>
         <button class="tab" data-tab="links"><svg class="ic"><use href="#b-discord"/></svg>Links</button>
         <button class="tab" data-tab="theme"><svg class="ic"><use href="#i-pumpkin"/></svg>Theme</button>
+        <button class="tab" data-tab="activity"><svg class="ic"><use href="#i-clock"/></svg>Activity</button>
       </nav>
 
       <div>
@@ -296,6 +329,20 @@
           <label class="opt"><input type="radio" name="theme" value="halloween"><span><b>Always Halloween</b><small>Orange, bats and cobwebs — until you switch it back.</small></span></label>
         </div>
 
+        <!-- Activity -->
+        <div data-pane="activity" class="hidden">
+          <div class="panel-h">
+            <div><h2>Activity</h2><p>Every change made to the site, newest first.</p></div>
+            <button class="btn btn-ghost btn-sm" id="act-refresh"><svg class="ic"><use href="#i-clock"/></svg><span>Refresh</span></button>
+          </div>
+          <div class="act-top">
+            <label class="field"><span>Your name in the log</span><input class="in" id="act-name" placeholder="e.g. Jimmy" maxlength="30"></label>
+            <small style="color:var(--text-faint);padding-bottom:10px">Saved on this device. Changes you publish are tagged with it.</small>
+          </div>
+          <div class="act-list" id="act-list"></div>
+          <div style="margin-top:14px;text-align:center"><button class="btn btn-ghost btn-sm hidden" id="act-more"><span>Load more</span></button></div>
+        </div>
+
         <div class="log hidden" id="log"></div>
       </div>
     </section>
@@ -313,7 +360,7 @@
   'use strict';
 
   /* ---------- Config ---------- */
-  const DEFAULT_REPO = { owner: 'zennydevs', repo: 'vexxomods', branch: 'main' };
+  const DEFAULT_REPO = { owner: 'vexxodevs', repo: 'vexmods', branch: 'main' };
   const DATA_PATH = 'site-data.json';
   const THEME_PATH = 'site-theme.js';
   const FILE_DIR = 'downloads';
@@ -409,6 +456,7 @@
     $('#login').classList.remove('hidden'); $('#app').classList.add('hidden');
     $('#who').classList.add('hidden'); $('#logout').classList.add('hidden');
     $('#owner').value = cfg.owner; $('#repo').value = cfg.repo; $('#branch').value = cfg.branch;
+    $('#name').value = cfg.name || '';
     $('#help-repo').textContent = cfg.repo;
     $('#login-err').textContent = msg || '';
   }
@@ -438,11 +486,13 @@
       owner: $('#owner').value.trim() || DEFAULT_REPO.owner,
       repo: $('#repo').value.trim() || DEFAULT_REPO.repo,
       branch: $('#branch').value.trim() || DEFAULT_REPO.branch,
-      token: $('#token').value.trim()
+      token: $('#token').value.trim(),
+      name: $('#name').value.trim()
     };
     if (await signIn()) {
       store.del('vx_admin');
       store.set('vx_admin', JSON.stringify(cfg), $('#remember').checked);
+      try { localStorage.setItem('vx_admin_persist', $('#remember').checked ? '1' : '0'); } catch (e) {}
       $('#token').value = '';
     }
   });
@@ -490,6 +540,7 @@
           <span class="med-ic">${iconSvg(m.icon)}</span>
           <span class="med-t"><b>${esc(m.name || 'Untitled mod')}</b><small>${esc(f ? f.name + ' (new)' : fileOf(m) || 'No file yet')}</small></span>
           <span class="med-tags">
+            ${m.updating ? '<span class="tagp upd">Updating</span>' : ''}
             ${m.featured ? '<span class="tagp feat">Featured</span>' : ''}
             ${f ? '<span class="tagp pending">New file</span>' : ''}
             ${(m.badges || []).slice(0, 2).map(b => `<span class="tagp">${esc(b)}</span>`).join('')}
@@ -501,6 +552,10 @@
           </span>
         </div>
         <div class="med-b">
+          <div class="upd-row${m.updating ? ' on' : ''}">
+            <div><b>Updating</b><br><small>Turn on while you fix something — the download is hidden and the card says “Updating — back soon”.</small></div>
+            <label class="switch" title="Updating"><input type="checkbox" data-f="updating" ${m.updating ? 'checked' : ''}><span></span></label>
+          </div>
           <div class="file-box" data-drop>
             <svg class="ic"><use href="#i-download"/></svg>
             <div class="file-info">
@@ -557,19 +612,20 @@
     if (f === 'badges') m.badges = el.value.split(',').map(s => s.trim()).filter(Boolean);
     else if (f === 'features') m.features = el.value.split('\n').map(s => s.trim()).filter(Boolean);
     else if (f === 'featured') { m.featured = el.checked; renderMods(); }
+    else if (f === 'updating') { if (el.checked) m.updating = true; else delete m.updating; renderMods(); }
     else if (f === 'accent') m.accent = hexToRgb(el.value);
     else if (f === 'icon') m.icon = el.value;
     else m[f] = el.value;
     if (f === 'name' && m._autoId) m.id = slug(m.name);
     if (f === 'id') delete m._autoId;
-    if (f !== 'featured') refreshHeader(card, m);
+    if (f !== 'featured' && f !== 'updating') refreshHeader(card, m);
     updatePub();
   });
 
   $('#mod-list').addEventListener('change', e => {
     const el = e.target;
     if (el.dataset.act === 'file' && el.files[0]) setFile(el.closest('.med'), el.files[0]);
-    else if (el.dataset.f === 'featured' || el.dataset.f === 'icon') el.dispatchEvent(new Event('input', { bubbles: true }));
+    else if (el.dataset.f === 'featured' || el.dataset.f === 'updating' || el.dataset.f === 'icon') el.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
   $('#mod-list').addEventListener('click', e => {
@@ -671,7 +727,96 @@
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     document.querySelectorAll('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t.dataset.tab));
     if (t.dataset.tab === 'announce') renderAnnouncement();
+    if (t.dataset.tab === 'activity') { $('#act-name').value = cfg.name || ''; loadActivity(false); }
   }));
+
+  /* ---------- Who + commit messages ---------- */
+  const by = () => cfg.name ? ` — by ${cfg.name}` : '';
+  function saveName(n) {
+    cfg.name = n.trim().slice(0, 30);
+    let persist = true;
+    try { persist = localStorage.getItem('vx_admin_persist') !== '0'; } catch (e) {}
+    store.del('vx_admin'); store.set('vx_admin', JSON.stringify(cfg), persist);
+  }
+  function describeChanges() {
+    const before = JSON.parse(original), parts = [];
+    const oldById = new Map((before.mods || []).map(m => [m.id, m]));
+    const clean = m => JSON.stringify(m, (k, v) => k.startsWith('_') ? undefined : v);
+    const newIds = new Set(data.mods.map(m => m.id));
+    data.mods.forEach(m => {
+      const o = oldById.get(m.id);
+      if (!o) parts.push(`added ${m.name}`);
+      else if (clean(o) !== clean(m)) {
+        if (!!o.updating !== !!m.updating) parts.push(`${m.name} ${m.updating ? 'set to Updating' : 'back online'}`);
+        else parts.push(`edited ${m.name}`);
+      }
+    });
+    (before.mods || []).forEach(o => { if (!newIds.has(o.id)) parts.push(`removed ${o.name}`); });
+    if ((before.mods || []).map(m => m.id).join() !== data.mods.map(m => m.id).filter(id => oldById.has(id)).join() && !parts.length) parts.push('reordered mods');
+    const sig = x => JSON.stringify(x || {}, (k, v) => k === 'id' ? undefined : v);
+    if (sig(before.announcement) !== sig(data.announcement)) parts.push('announcement');
+    if (JSON.stringify(before.links || {}) !== JSON.stringify(data.links || {})) parts.push('links');
+    const msg = parts.length ? parts.join(', ') : 'update site';
+    return msg.charAt(0).toUpperCase() + msg.slice(1);
+  }
+
+  /* ---------- Activity log (reads the repo's commit history) ---------- */
+  let actPage = 1;
+  const ago = d => {
+    const s = (Date.now() - new Date(d)) / 1000;
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+    return new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+  const dayLabel = d => {
+    const x = new Date(d), t = new Date(); const y = new Date(); y.setDate(t.getDate() - 1);
+    if (x.toDateString() === t.toDateString()) return 'Today';
+    if (x.toDateString() === y.toDateString()) return 'Yesterday';
+    return x.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+  };
+  function kindOf(msg) {
+    const m = msg.toLowerCase();
+    if (/upload|new file/.test(m)) return ['i-download', '46, 230, 200'];
+    if (/remov|delete/.test(m)) return ['i-x', '255, 77, 109'];
+    if (/updating/.test(m)) return ['i-clock', '251, 191, 36'];
+    if (/theme/.test(m)) return ['i-pumpkin', '255, 138, 61'];
+    if (/announce/.test(m)) return ['i-bell', '196, 181, 253'];
+    return ['i-check', '139, 92, 246'];
+  }
+  async function loadActivity(more) {
+    const list = $('#act-list'), btn = $('#act-more');
+    if (!more) { actPage = 1; list.innerHTML = '<div class="box card" style="color:var(--text-dim)">Loading…</div>'; }
+    try {
+      const commits = await gh(`${repoPath()}/commits?sha=${encodeURIComponent(cfg.branch)}&per_page=25&page=${actPage}`);
+      if (!more) list.innerHTML = '';
+      let lastDay = list.dataset.lastDay || '';
+      if (!more) lastDay = '';
+      commits.forEach(c => {
+        const full = (c.commit.message || '').split('\n')[0];
+        const mBy = full.match(/\s+—\s+by\s+(.+)$/);
+        const who = mBy ? mBy[1] : (c.author && c.author.login) || c.commit.author.name;
+        const text = full.replace(/\s+—\s+by\s+.+$/, '').replace(/^Admin:\s*/, '').replace(/^./, ch => ch.toUpperCase());
+        const when = c.commit.author.date, day = dayLabel(when);
+        if (day !== lastDay) { list.insertAdjacentHTML('beforeend', `<div class="act-day">${esc(day)}</div>`); lastDay = day; }
+        const [ic, k] = kindOf(text);
+        list.insertAdjacentHTML('beforeend', `<div class="act card" style="--k:${k}">
+          <span class="act-ic"><svg class="ic"><use href="#${ic}"/></svg></span>
+          <span class="act-t"><b>${esc(text)}</b><small><strong>${esc(who)}</strong> · ${esc(ago(when))}</small></span>
+          <a class="iconbtn" href="${esc(c.html_url)}" target="_blank" rel="noopener" title="View on GitHub"><svg class="ic"><use href="#i-arrow"/></svg></a>
+        </div>`);
+      });
+      list.dataset.lastDay = lastDay;
+      if (!more && !commits.length) list.innerHTML = '<div class="box card" style="color:var(--text-dim)">No changes yet.</div>';
+      btn.classList.toggle('hidden', commits.length < 25);
+    } catch (e) {
+      list.innerHTML = `<div class="box card" style="color:#ff8fa3">Couldn’t load activity: ${esc(e.message)}</div>`;
+    }
+  }
+  $('#act-refresh').addEventListener('click', () => loadActivity(false));
+  $('#act-more').addEventListener('click', () => { actPage++; loadActivity(true); });
+  $('#act-name').addEventListener('change', e => saveName(e.target.value));
 
   /* ---------- Publish ---------- */
   function updatePub() {
@@ -690,7 +835,7 @@
       m.id = slug(m.id || m.name);
       while (ids.has(m.id)) m.id += '-2';
       ids.add(m.id);
-      if (!m.url && !pending.has(m._key)) return `${m.name} has no download file yet — add one or remove the mod.`;
+      if (!m.url && !pending.has(m._key) && !m.updating) return `${m.name} has no download file yet — add one or remove the mod.`;
     }
     return null;
   }
@@ -716,13 +861,13 @@
         const oldPath = localPath(m.url);
         log(`Uploading ${esc(name)} (${fmtSize(file.size)})…`);
         const existing = await getFile(path);
-        await putFile(path, await fileToB64(file), `Admin: upload ${name} for ${m.name}`, existing && existing.sha);
+        await putFile(path, await fileToB64(file), `New file for ${m.name}: ${name}${by()}`, existing && existing.sha);
         m.url = path; m.file = name;
         pending.delete(m._key);
         log(`✓ ${esc(name)} uploaded`, 'ok');
         if (oldPath && oldPath !== path && !stillUsed(oldPath)) {
           const old = await getFile(oldPath);
-          if (old) { await deleteFile(oldPath, old.sha, `Admin: remove old ${oldPath.split('/').pop()}`); log(`✓ Removed old file ${esc(oldPath.split('/').pop())}`, 'ok'); }
+          if (old) { await deleteFile(oldPath, old.sha, `Removed old file ${oldPath.split('/').pop()}${by()}`); log(`✓ Removed old file ${esc(oldPath.split('/').pop())}`, 'ok'); }
         }
       }
       // 2. Clean up files from removed mods
@@ -732,7 +877,7 @@
           const p = localPath(om.url);
           if (p && !stillUsed(p)) {
             const old = await getFile(p);
-            if (old) { await deleteFile(p, old.sha, `Admin: remove ${p.split('/').pop()}`); log(`✓ Removed unused file ${esc(p.split('/').pop())}`, 'ok'); }
+            if (old) { await deleteFile(p, old.sha, `Removed unused file ${p.split('/').pop()}${by()}`); log(`✓ Removed unused file ${esc(p.split('/').pop())}`, 'ok'); }
           }
         }
       } catch (e) { log('Could not clean up an old file (not a problem): ' + esc(e.message)); }
@@ -747,17 +892,18 @@
         log('Saving theme…');
         const js = `// Set by the admin panel. "auto" = Halloween every October, or "default" / "halloween".\nwindow.VX_THEME = "${theme}";\n`;
         const cur = await getFile(THEME_PATH);
-        await putFile(THEME_PATH, utf8ToB64(js), `Admin: theme → ${theme}`, cur && cur.sha);
+        await putFile(THEME_PATH, utf8ToB64(js), `Theme set to ${theme === 'auto' ? 'automatic' : theme}${by()}`, cur && cur.sha);
         themeOriginal = theme;
         log('✓ Theme saved', 'ok');
       }
 
       // 5. Site data
       const json = strip(data);
+      const summary = describeChanges();
       if (json !== original) {
         log('Saving site settings…');
         const cur = await getFile(DATA_PATH);
-        const res = await putFile(DATA_PATH, utf8ToB64(json), 'Admin: update site', cur && cur.sha);
+        const res = await putFile(DATA_PATH, utf8ToB64(json), summary + by(), cur && cur.sha);
         dataSha = res.content.sha; original = json;
         log('✓ Settings saved', 'ok');
       }
@@ -779,6 +925,7 @@
   (async () => {
     let saved = null;
     try { saved = JSON.parse(store.get('vx_admin') || 'null'); } catch (e) {}
+    if (saved && String(saved.owner||'').toLowerCase() === 'zennydevs') saved = null; /* old account, ignore */
     if (saved && saved.token) { cfg = { ...DEFAULT_REPO, ...saved }; showLogin(); $('#login-err').textContent = 'Signing in…'; await signIn(); }
     else showLogin();
   })();
