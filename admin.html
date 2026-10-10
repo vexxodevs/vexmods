@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — VexxosMods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { min-height: 100vh; }
+  .adm-nav { position: sticky; top: 0; z-index: 50; background: rgba(8,7,15,.8); border-bottom: 1px solid var(--hairline); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .adm-nav .wrap { display: flex; align-items: center; gap: 14px; padding-top: 12px; padding-bottom: 12px; }
+  .adm-pill { font-family: var(--f-mono); font-size: .72rem; padding: 3px 9px; border-radius: 999px; color: var(--violet-soft); background: rgba(var(--violet-rgb), .13); border: 1px solid rgba(var(--violet-rgb), .35); }
+  .adm-nav .spacer { flex: 1; }
+  .adm-user { font-size: .85rem; color: var(--text-dim); display: inline-flex; align-items: center; gap: 8px; }
+  .adm-user .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 8px var(--aqua); }
+
+  .adm-main { padding: 36px 0 140px; }
+  .hidden { display: none !important; }
+
+  /* Login */
+  .login { max-width: 520px; margin: 40px auto 0; padding: 32px; }
+  .login h1 { font-family: var(--f-display); font-size: 1.8rem; margin: 0 0 6px; letter-spacing: -.02em; }
+  .login > p { color: var(--text-dim); margin: 0 0 22px; font-size: .95rem; }
+  .help { margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--hairline); font-size: .86rem; color: var(--text-dim); }
+  .help ol { margin: 8px 0 0; padding-left: 18px; }
+  .help li { margin-bottom: 4px; }
+  .help a { color: var(--violet-soft); font-weight: 600; }
+  .help b { color: var(--text); }
+
+  /* Forms */
+  .field { display: grid; gap: 6px; margin-bottom: 14px; }
+  .field > span { font-size: .78rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+  .field small { color: var(--text-faint); font-size: .78rem; }
+  .in, .ta, .sel {
+    width: 100%; font: inherit; font-size: .94rem; color: var(--text);
+    background: rgba(255,255,255,.04); border: 1px solid var(--hairline-bright); border-radius: 11px;
+    padding: 10px 12px; transition: border-color .2s, background .2s;
+  }
+  .ta { min-height: 84px; resize: vertical; line-height: 1.5; }
+  .in:focus, .ta:focus, .sel:focus { outline: none; border-color: rgba(var(--violet-rgb), .7); background: rgba(var(--violet-rgb), .07); }
+  .sel option { background: var(--ink-700); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .check { display: inline-flex; align-items: center; gap: 9px; font-size: .92rem; cursor: pointer; user-select: none; }
+  .check input { width: 18px; height: 18px; accent-color: var(--violet); }
+  .btn-xs { padding: 7px 12px; font-size: .82rem; }
+  .btn-danger { color: #ff8fa3; background: rgba(255, 77, 109, .08); border-color: rgba(255, 77, 109, .3); }
+  .btn-danger:hover { background: rgba(255, 77, 109, .16); border-color: rgba(255, 77, 109, .6); }
+  .err { color: #ff8fa3; font-size: .88rem; margin: 10px 0 0; min-height: 1.2em; }
+
+  /* Layout */
+  .adm-grid { display: grid; grid-template-columns: 210px 1fr; gap: 28px; align-items: start; }
+  .tabs { position: sticky; top: 84px; display: grid; gap: 4px; padding: 10px; }
+  .tab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; border: 0; background: none; color: var(--text-dim); font: inherit; font-size: .93rem; font-weight: 500; cursor: pointer; text-align: left; transition: background .2s, color .2s; }
+  .tab:hover { background: var(--glass-2); color: var(--text); }
+  .tab.on { background: rgba(var(--violet-rgb), .14); color: var(--text); }
+  .tab.on .ic { color: var(--violet-soft); }
+  .panel-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .panel-h h2 { font-family: var(--f-display); font-size: 1.6rem; margin: 0; letter-spacing: -.02em; }
+  .panel-h p { margin: 4px 0 0; color: var(--text-dim); font-size: .92rem; }
+  .box { padding: 24px; }
+
+  /* Mod editors */
+  .mod-list { display: grid; gap: 12px; }
+  .med { border-radius: var(--r-md); overflow: hidden; }
+  .med-h { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; }
+  .med-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; color: rgb(var(--acc)); background: rgba(var(--acc), .13); border: 1px solid rgba(var(--acc), .32); }
+  .med-ic svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .med-t { flex: 1; min-width: 0; }
+  .med-t b { display: block; font-family: var(--f-display); font-size: 1.05rem; }
+  .med-t small { display: block; font-family: var(--f-mono); font-size: .74rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .med-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tagp { font-size: .7rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--glass-2); border: 1px solid var(--hairline); color: var(--text-dim); }
+  .tagp.pending { color: var(--amber); border-color: rgba(var(--amber-rgb), .4); background: rgba(var(--amber-rgb), .08); }
+  .tagp.feat { color: rgb(var(--acc)); border-color: rgba(var(--acc), .4); }
+  .med-act { display: flex; gap: 4px; }
+  .iconbtn { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; border: 1px solid transparent; background: none; color: var(--text-dim); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+  .iconbtn:hover { background: var(--glass-2); color: var(--text); border-color: var(--hairline); }
+  .iconbtn:disabled { opacity: .3; cursor: default; background: none; }
+  .iconbtn .ic { width: 16px; height: 16px; }
+  .chev { transition: transform .3s var(--ease); }
+  .med.open .chev { transform: rotate(180deg); }
+  .med-b { display: none; padding: 4px 18px 18px; border-top: 1px solid var(--hairline); }
+  .med.open .med-b { display: block; padding-top: 18px; }
+
+  .file-box { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px; border-radius: 13px; border: 1px dashed rgba(var(--violet-rgb), .4); background: rgba(var(--violet-rgb), .05); margin-bottom: 14px; transition: border-color .2s, background .2s; }
+  .file-box.drag { border-color: var(--violet); background: rgba(var(--violet-rgb), .14); }
+  .file-box .ic { color: var(--violet-soft); }
+  .file-info { flex: 1; min-width: 180px; }
+  .file-info b { display: block; font-family: var(--f-mono); font-size: .84rem; word-break: break-all; }
+  .file-info small { color: var(--text-faint); font-size: .8rem; }
+  .file-info .pending { color: var(--amber); }
+  .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+  .icons label { position: relative; }
+  .icons input { position: absolute; opacity: 0; pointer-events: none; }
+  .icons span { height: 44px; display: grid; place-items: center; border-radius: 11px; border: 1px solid var(--hairline); background: rgba(255,255,255,.03); color: var(--text-dim); cursor: pointer; transition: all .2s; }
+  .icons svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .icons input:checked + span { color: rgb(var(--acc)); border-color: rgba(var(--acc), .6); background: rgba(var(--acc), .13); }
+  .icons input:focus-visible + span { outline: 2px solid var(--violet-soft); }
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-row input[type=color] { width: 46px; height: 40px; padding: 0; border: 1px solid var(--hairline-bright); border-radius: 10px; background: none; cursor: pointer; }
+  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  .swatches button { width: 24px; height: 24px; border-radius: 7px; border: 1px solid rgba(255,255,255,.2); cursor: pointer; }
+  details.adv summary { cursor: pointer; color: var(--text-dim); font-size: .86rem; margin: 4px 0 12px; }
+
+  .opt { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 14px; border: 1px solid var(--hairline); background: rgba(255,255,255,.025); cursor: pointer; margin-bottom: 10px; transition: border-color .2s, background .2s; }
+  .opt:hover { border-color: var(--hairline-bright); }
+  .opt input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--violet); }
+  .opt b { display: block; font-family: var(--f-display); }
+  .opt small { color: var(--text-dim); font-size: .86rem; }
+  .opt:has(input:checked) { border-color: rgba(var(--violet-rgb), .55); background: rgba(var(--violet-rgb), .08); }
+
+  .preview-bar { margin-bottom: 18px; border-radius: 12px; overflow: hidden; border: 1px solid var(--hairline); }
+  .preview-bar .announce { max-height: none; }
+  .preview-bar .announce-close { display: none; }
+
+  /* Publish bar */
+  .pub { position: fixed; left: 50%; bottom: 18px; z-index: 60; transform: translate(-50%, 150%); width: min(760px, calc(100% - 24px));
+    display: flex; align-items: center; gap: 14px; padding: 12px 12px 12px 20px; border-radius: 18px;
+    background: rgba(16,14,30,.94); border: 1px solid var(--hairline-bright); box-shadow: 0 20px 50px -14px rgba(0,0,0,.85);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: transform .5s var(--spring); }
+  .pub.show { transform: translate(-50%, 0); }
+  .pub-txt { flex: 1; font-size: .9rem; color: var(--text-dim); }
+  .pub-txt b { color: var(--text); }
+
+  .log { margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid var(--hairline); font-family: var(--f-mono); font-size: .8rem; color: var(--text-dim); max-height: 220px; overflow: auto; }
+  .log div { padding: 2px 0; }
+  .log .ok { color: var(--aqua); }
+  .log .bad { color: #ff8fa3; }
+  .log a { color: var(--violet-soft); text-decoration: underline; }
+
+  @media (max-width: 820px) {
+    .adm-grid { grid-template-columns: 1fr; }
+    .tabs { position: static; grid-template-columns: repeat(4, 1fr); padding: 6px; }
+    .tab { justify-content: center; padding: 10px 6px; font-size: .82rem; flex-direction: column; gap: 4px; }
+    .row2 { grid-template-columns: 1fr; }
+    .med-tags { display: none; }
+    .adm-user span { display: none; }
+  }
+</style>
+</head>
+<body>
+<!-- ============ Icon sprite (stroke icons, Zenex style) ============ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M4 19h16"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3V9Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7 18.5 3.5 21V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v10.5a2 2 0 0 1-2 2H7Z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2 20.5h20L12 3.5Z"/><path d="M12 10v4.5M12 17.5h.01"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H12L11 21.5l8.5-11H12l1-8Z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8S10.5 3.5 8 4.5 9 8 12 8Zm0 0s1.5-4.5 4-3.5S15 8 12 8Z"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l2.5 2.5M14 9l2 2"/></symbol>
+  <symbol id="i-pumpkin" viewBox="0 0 24 24"><path d="M12 7c-4.5 0-8 2.9-8 6.8S7.5 20.5 12 20.5s8-2.8 8-6.7S16.5 7 12 7Z"/><path d="M12 7c-2 0-3 3-3 6.8s1 6.7 3 6.7 3-2.9 3-6.7S14 7 12 7Z"/><path d="M12 7V4.5C12 3.5 12.8 3 14 3"/></symbol>
+  <symbol id="i-bat" viewBox="0 0 32 16"><path fill="currentColor" stroke="none" d="M16 4.2c.5-1.3 1.3-2.2 1.3-2.2l.4 2.3c2.6-1.6 6.6-2.2 10-1 1.5.5 2.8 1.4 4.3 2.7-2-.4-3.8 0-4.9 1.2-1-.8-2.4-1-3.6-.5-1 .4-1.6 1.3-1.8 2.4-1.4-1-3.2-1.2-4.6-.3-.5.3-.9.8-1.1 1.3-.2-.5-.6-1-1.1-1.3-1.4-.9-3.2-.7-4.6.3-.2-1.1-.8-2-1.8-2.4-1.2-.5-2.6-.3-3.6.5C4.8 6.8 3 6.4 1 6.8 2.5 5.5 3.8 4.6 5.3 4.1c3.4-1.2 7.4-.6 10 1l.4-2.3S15.5 2.9 16 4.2Z"/></symbol>
+  <!-- Mod icons -->
+  <symbol id="m-spawner" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M3.5 15h17M9 3.5v17M15 3.5v17"/><path fill="currentColor" fill-opacity=".45" d="M12 10.3c1.2 1 1.6 1.9 1.6 2.6a1.6 1.6 0 0 1-3.2 0c0-.7.4-1.6 1.6-2.6Z"/></symbol>
+  <symbol id="m-meteor" viewBox="0 0 24 24"><circle cx="15.5" cy="8.5" r="4"/><path d="M12.6 11.4 4 20M10 9 5 14M15 14l-5 5"/></symbol>
+  <symbol id="m-glazed" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M7.5 6.5 8.5 8M16 6l-.8 1.6M18 13l-1.6.4M7 16.5l1.4-1M14 17.8l-.4-1.6"/></symbol>
+  <symbol id="m-rig" viewBox="0 0 24 24"><path d="M14.5 4.5c3 0 5.5 1.7 6.5 4-2.2-1-4.6-1.3-7-.8M9.5 4.5c-3 0-5.5 1.7-6.5 4 2.2-1 4.6-1.3 7-.8"/><path d="M12 6.5V21"/><path d="M10 6.5h4"/></symbol>
+  <symbol id="m-sword" viewBox="0 0 24 24"><path d="M14.5 3.5H20.5V9.5L10 20l-6-6L14.5 3.5Z"/><path d="m4 20 2-2M7.5 13.5l3 3"/></symbol>
+  <symbol id="m-pickaxe" viewBox="0 0 24 24"><path d="M4.5 9C8 5 13.5 3.5 19 4.5 18 5.5 16.5 6 15 6.5"/><path d="M15 6.5 5 20.5M15 6.5c1 1.5 1.5 3 1.5 4.5"/></symbol>
+  <symbol id="m-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="m-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9L12 3.5Z"/></symbol>
+  <symbol id="m-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="m-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H12L11 21.5l8.5-11H12l1-8Z"/></symbol>
+  <symbol id="m-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/></symbol>
+  <symbol id="m-map" viewBox="0 0 24 24"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4Z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="m-tpa" viewBox="0 0 24 24"><path d="M4 8h13m0 0-3.5-3.5M17 8l-3.5 3.5M20 16H7m0 0 3.5-3.5M7 16l3.5 3.5"/></symbol>
+  <!-- Brand -->
+  <symbol id="b-discord" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M20.3 4.4a19.8 19.8 0 0 0-4.9-1.5l-.6 1.2a18.3 18.3 0 0 0-5.5 0L8.7 2.9a19.7 19.7 0 0 0-4.9 1.5C.7 9 -.2 13.6.2 18.1a19.9 19.9 0 0 0 6 3c.5-.6.9-1.3 1.2-2a13 13 0 0 1-1.9-.9l.4-.3a14.2 14.2 0 0 0 12.1 0l.4.3c-.6.4-1.2.7-1.9.9.4.7.8 1.4 1.3 2a19.8 19.8 0 0 0 6-3c.5-5.2-.9-9.7-3.5-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></symbol>
+  <symbol id="b-youtube" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></symbol>
+</svg>
+
+<div class="bg" aria-hidden="true">
+  <div class="aurora a1"></div>
+  <div class="aurora a2"></div>
+  <div class="grain"></div>
+</div>
+
+<header class="adm-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand"><span class="brand-mark">V</span><span class="brand-name">Vexxos<span class="grad">Mods</span></span></a>
+    <span class="adm-pill">Admin</span>
+    <span class="spacer"></span>
+    <span class="adm-user hidden" id="who"><span class="dot"></span><span id="who-name"></span></span>
+    <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener"><svg class="ic"><use href="#i-arrow"/></svg><span>View site</span></a>
+    <button class="btn btn-ghost btn-sm hidden" id="logout"><span>Sign out</span></button>
+  </div>
+</header>
+
+<main class="adm-main">
+  <div class="wrap">
+
+    <!-- ============ Login ============ -->
+    <section class="login card hidden" id="login">
+      <h1>Admin sign in</h1>
+      <p>Edit mods, swap download files and change site settings. Changes go live about a minute after you publish.</p>
+      <form id="login-form" autocomplete="off">
+        <label class="field"><span>GitHub access token</span>
+          <input class="in" type="password" id="token" placeholder="github_pat_…" required spellcheck="false">
+        </label>
+        <details class="adv">
+          <summary>Repository settings</summary>
+          <div class="row2">
+            <label class="field"><span>Owner</span><input class="in" id="owner" spellcheck="false"></label>
+            <label class="field"><span>Repository</span><input class="in" id="repo" spellcheck="false"></label>
+          </div>
+          <label class="field"><span>Branch</span><input class="in" id="branch" spellcheck="false"></label>
+        </details>
+        <label class="check"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
+        <div style="margin-top:18px"><button class="btn btn-primary" type="submit" id="login-btn"><span>Sign in</span><svg class="ic"><use href="#i-arrow"/></svg></button></div>
+        <p class="err" id="login-err"></p>
+      </form>
+      <div class="help">
+        <b>Need a token?</b> Make one on GitHub — it only takes a minute:
+        <ol>
+          <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
+          <li>Name it <b>Vexxo admin</b> and pick an expiry (e.g. 1 year).</li>
+          <li>Repository access: <b>Only select repositories</b> → choose <b id="help-repo">vexxomods</b>.</li>
+          <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
+          <li>Click <b>Generate token</b>, copy it, and paste it above.</li>
+        </ol>
+        The token is only saved in this browser. Never share it — anyone with it can edit the site.
+      </div>
+    </section>
+
+    <!-- ============ Editor ============ -->
+    <section class="adm-grid hidden" id="app">
+      <nav class="tabs card">
+        <button class="tab on" data-tab="mods"><svg class="ic"><use href="#i-box"/></svg>Mods</button>
+        <button class="tab" data-tab="announce"><svg class="ic"><use href="#i-bell"/></svg>Announcement</button>
+        <button class="tab" data-tab="links"><svg class="ic"><use href="#b-discord"/></svg>Links</button>
+        <button class="tab" data-tab="theme"><svg class="ic"><use href="#i-pumpkin"/></svg>Theme</button>
+      </nav>
+
+      <div>
+        <!-- Mods -->
+        <div data-pane="mods">
+          <div class="panel-h">
+            <div><h2>Mods</h2><p>Click a mod to edit it. Drop a new file on it to replace the download.</p></div>
+            <button class="btn btn-primary btn-sm" id="add-mod"><svg class="ic"><use href="#i-plus"/></svg><span>Add mod</span></button>
+          </div>
+          <div class="mod-list" id="mod-list"></div>
+        </div>
+
+        <!-- Announcement -->
+        <div data-pane="announce" class="hidden">
+          <div class="panel-h"><div><h2>Announcement bar</h2><p>The strip at the very top of the site.</p></div></div>
+          <div class="preview-bar" id="ann-preview"></div>
+          <div class="box card">
+            <label class="check" style="margin-bottom:18px"><input type="checkbox" id="ann-enabled"> Show the announcement bar</label>
+            <div class="row2">
+              <label class="field"><span>Tag</span><input class="in" id="ann-tag" placeholder="New"></label>
+              <label class="field"><span>Bold text</span><input class="in" id="ann-title" placeholder="Spawner Protect v1.0"></label>
+            </div>
+            <label class="field"><span>Text</span><input class="in" id="ann-text" placeholder="is out"></label>
+            <label class="field"><span>Extra text <small>(hidden on phones)</small></span><input class="in" id="ann-more" placeholder=" — get alerted when players get near your spawners"></label>
+            <div class="row2">
+              <label class="field"><span>Button text</span><input class="in" id="ann-linktext" placeholder="Get it"></label>
+              <label class="field"><span>Button goes to</span><select class="sel" id="ann-link"></select></label>
+            </div>
+            <label class="field hidden" id="ann-custom-wrap"><span>Custom link</span><input class="in" id="ann-custom" placeholder="https://…"></label>
+            <small style="color:var(--text-faint)">Anyone who closed the old announcement will see this one again once you publish a change.</small>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div data-pane="links" class="hidden">
+          <div class="panel-h"><div><h2>Links</h2><p>Used everywhere on the site.</p></div></div>
+          <div class="box card">
+            <label class="field"><span>Discord invite</span><input class="in" id="lk-discord" placeholder="https://discord.gg/…"></label>
+            <label class="field"><span>YouTube video</span><input class="in" id="lk-youtube" placeholder="https://youtu.be/…"><small>Shown in the "Watch it in action" section. Paste any YouTube link.</small></label>
+          </div>
+        </div>
+
+        <!-- Theme -->
+        <div data-pane="theme" class="hidden">
+          <div class="panel-h"><div><h2>Theme</h2><p>Seasonal look for the whole site.</p></div></div>
+          <label class="opt"><input type="radio" name="theme" value="auto"><span><b>Automatic</b><small>Halloween every October, normal the rest of the year.</small></span></label>
+          <label class="opt"><input type="radio" name="theme" value="default"><span><b>Always normal</b><small>Purple Vexxo look all year.</small></span></label>
+          <label class="opt"><input type="radio" name="theme" value="halloween"><span><b>Always Halloween</b><small>Orange, bats and cobwebs — until you switch it back.</small></span></label>
+        </div>
+
+        <div class="log hidden" id="log"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="pub" id="pub">
+  <span class="pub-txt" id="pub-txt"><b>Unsaved changes</b></span>
+  <button class="btn btn-ghost btn-sm" id="discard"><span>Discard</span></button>
+  <button class="btn btn-primary btn-sm" id="publish"><svg class="ic"><use href="#i-check"/></svg><span>Publish</span></button>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- Config ---------- */
+  const DEFAULT_REPO = { owner: 'zennydevs', repo: 'vexxomods', branch: 'main' };
+  const DATA_PATH = 'site-data.json';
+  const THEME_PATH = 'site-theme.js';
+  const FILE_DIR = 'downloads';
+  const MAX_FILE = 95 * 1024 * 1024;
+  const ICONS = ['spawner', 'meteor', 'glazed', 'rig', 'tpa', 'sword', 'pickaxe', 'eye', 'star', 'box', 'bolt', 'shield', 'map'];
+  const SWATCHES = ['255, 138, 61', '168, 85, 247', '56, 189, 248', '255, 77, 109', '46, 230, 200', '250, 204, 21', '132, 225, 74', '236, 72, 153', '226, 232, 240'];
+
+  /* ---------- State ---------- */
+  let cfg = { ...DEFAULT_REPO, token: '' };
+  let data = null, original = '', dataSha = null;
+  let theme = 'auto', themeOriginal = 'auto', themeSha = null;
+  const pending = new Map();   // mod key -> File
+  let keySeq = 0;
+  const openKeys = new Set();
+
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v, persist) { try { (persist ? localStorage : sessionStorage).setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) {} }
+  };
+
+  /* ---------- GitHub API ---------- */
+  async function gh(path, opts = {}) {
+    const r = await fetch('https://api.github.com' + path, {
+      ...opts,
+      headers: {
+        Authorization: 'Bearer ' + cfg.token,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(opts.body ? { 'Content-Type': 'application/json' } : {})
+      },
+      cache: 'no-store'
+    });
+    if (r.status === 404 && opts.allow404) return null;
+    if (!r.ok) {
+      let msg = r.statusText;
+      try { msg = (await r.json()).message || msg; } catch (e) {}
+      const err = new Error(`${r.status} — ${msg}`); err.status = r.status; throw err;
+    }
+    return r.status === 204 ? null : r.json();
+  }
+  const enc = p => p.split('/').map(encodeURIComponent).join('/');
+  const repoPath = () => `/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}`;
+  const getFile = path => gh(`${repoPath()}/contents/${enc(path)}?ref=${encodeURIComponent(cfg.branch)}`, { allow404: true });
+  const putFile = (path, b64, message, sha) => gh(`${repoPath()}/contents/${enc(path)}`, {
+    method: 'PUT', body: JSON.stringify({ message, content: b64, branch: cfg.branch, ...(sha ? { sha } : {}) })
+  });
+  const deleteFile = (path, sha, message) => gh(`${repoPath()}/contents/${enc(path)}`, {
+    method: 'DELETE', body: JSON.stringify({ message, sha, branch: cfg.branch })
+  });
+
+  function utf8ToB64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  function b64ToUtf8(b64) {
+    const bin = atob(b64.replace(/\s/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  const fileToB64 = file => new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(',')[1] || '');
+    fr.onerror = () => rej(fr.error);
+    fr.readAsDataURL(file);
+  });
+
+  /* ---------- Helpers ---------- */
+  const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mod';
+  const cleanName = n => String(n).replace(/[^\w.\-]+/g, '-').replace(/^-+|-+$/g, '') || 'file';
+  const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  const rgbToHex = rgb => '#' + String(rgb).split(',').map(n => Math.max(0, Math.min(255, parseInt(n, 10) || 0)).toString(16).padStart(2, '0')).join('');
+  const hexToRgb = hex => { const m = hex.replace('#', '').match(/.{2}/g) || ['8b', '5c', 'f6']; return m.map(x => parseInt(x, 16)).join(', '); };
+  const accentOf = m => /^\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*$/.test(m.accent || '') ? m.accent : '139, 92, 246';
+  const fileOf = m => m.file || decodeURIComponent(String(m.url || '').split('?')[0].split('/').pop() || '');
+  const localPath = u => /^downloads\//.test(u || '') ? String(u).split('?')[0] : null;
+  const strip = d => JSON.stringify(d, (k, v) => k.startsWith('_') ? undefined : v, 2) + '\n';
+  const isDirty = () => !!data && (strip(data) !== original || pending.size > 0 || theme !== themeOriginal);
+
+  function log(msg, cls) {
+    const el = $('#log'); el.classList.remove('hidden');
+    const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = msg;
+    el.appendChild(d); el.scrollTop = el.scrollHeight;
+  }
+
+  /* ---------- Login ---------- */
+  function showLogin(msg) {
+    $('#login').classList.remove('hidden'); $('#app').classList.add('hidden');
+    $('#who').classList.add('hidden'); $('#logout').classList.add('hidden');
+    $('#owner').value = cfg.owner; $('#repo').value = cfg.repo; $('#branch').value = cfg.branch;
+    $('#help-repo').textContent = cfg.repo;
+    $('#login-err').textContent = msg || '';
+  }
+
+  async function signIn() {
+    const btn = $('#login-btn'); btn.disabled = true;
+    $('#login-err').textContent = '';
+    try {
+      const repo = await gh(repoPath());
+      const me = await gh('/user').catch(() => null);
+      await loadAll();
+      $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
+      $('#who').classList.remove('hidden'); $('#logout').classList.remove('hidden');
+      $('#who-name').textContent = (me && me.login ? me.login + ' · ' : '') + repo.full_name;
+      return true;
+    } catch (e) {
+      showLogin(e.status === 401 ? 'That token was rejected. Check you copied all of it, and that it hasn’t expired.'
+        : e.status === 404 ? `Can’t see ${cfg.owner}/${cfg.repo}. Make sure the token has access to that repository.`
+        : 'Sign-in failed: ' + e.message);
+      return false;
+    } finally { btn.disabled = false; }
+  }
+
+  $('#login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    cfg = {
+      owner: $('#owner').value.trim() || DEFAULT_REPO.owner,
+      repo: $('#repo').value.trim() || DEFAULT_REPO.repo,
+      branch: $('#branch').value.trim() || DEFAULT_REPO.branch,
+      token: $('#token').value.trim()
+    };
+    if (await signIn()) {
+      store.del('vx_admin');
+      store.set('vx_admin', JSON.stringify(cfg), $('#remember').checked);
+      $('#token').value = '';
+    }
+  });
+
+  $('#logout').addEventListener('click', () => {
+    if (isDirty() && !confirmLeave()) return;
+    store.del('vx_admin'); cfg = { ...DEFAULT_REPO, token: '' };
+    data = null; pending.clear(); updatePub(); showLogin();
+  });
+  function confirmLeave() { return window.confirm('You have unpublished changes. Leave anyway?'); }
+
+  /* ---------- Load ---------- */
+  async function loadAll() {
+    const f = await getFile(DATA_PATH);
+    if (!f) throw Object.assign(new Error(`${DATA_PATH} not found in the repo`), { status: 0 });
+    dataSha = f.sha;
+    data = JSON.parse(b64ToUtf8(f.content));
+    data.mods = Array.isArray(data.mods) ? data.mods : [];
+    data.announcement = data.announcement || {};
+    data.links = data.links || {};
+    original = strip(data);
+    data.mods.forEach(m => { m._key = ++keySeq; });
+
+    const t = await getFile(THEME_PATH);
+    themeSha = t ? t.sha : null;
+    const mt = t ? b64ToUtf8(t.content).match(/VX_THEME\s*=\s*["'](\w+)["']/) : null;
+    theme = themeOriginal = mt ? mt[1] : 'auto';
+
+    pending.clear(); openKeys.clear();
+    renderAll(); updatePub();
+  }
+
+  /* ---------- Render ---------- */
+  function renderAll() { renderMods(); renderAnnouncement(); renderLinks(); renderTheme(); }
+
+  function iconSvg(name) { return `<svg><use href="#m-${ICONS.includes(name) ? name : 'box'}"/></svg>`; }
+
+  function renderMods() {
+    const list = $('#mod-list');
+    list.innerHTML = data.mods.map((m, i) => {
+      const k = m._key, f = pending.get(k);
+      const open = openKeys.has(k);
+      return `<article class="med card${open ? ' open' : ''}" data-key="${k}" style="--acc:${accentOf(m)}">
+        <div class="med-h" data-act="toggle">
+          <span class="med-ic">${iconSvg(m.icon)}</span>
+          <span class="med-t"><b>${esc(m.name || 'Untitled mod')}</b><small>${esc(f ? f.name + ' (new)' : fileOf(m) || 'No file yet')}</small></span>
+          <span class="med-tags">
+            ${m.featured ? '<span class="tagp feat">Featured</span>' : ''}
+            ${f ? '<span class="tagp pending">New file</span>' : ''}
+            ${(m.badges || []).slice(0, 2).map(b => `<span class="tagp">${esc(b)}</span>`).join('')}
+          </span>
+          <span class="med-act">
+            <button class="iconbtn" data-act="up" title="Move up" ${i === 0 ? 'disabled' : ''}><svg class="ic"><use href="#i-up"/></svg></button>
+            <button class="iconbtn" data-act="down" title="Move down" ${i === data.mods.length - 1 ? 'disabled' : ''}><svg class="ic" style="transform:rotate(180deg)"><use href="#i-up"/></svg></button>
+            <button class="iconbtn chev" data-act="toggle" title="Edit"><svg class="ic" style="transform:rotate(180deg)"><use href="#i-up"/></svg></button>
+          </span>
+        </div>
+        <div class="med-b">
+          <div class="file-box" data-drop>
+            <svg class="ic"><use href="#i-download"/></svg>
+            <div class="file-info">
+              ${f ? `<b>${esc(f.name)}</b><small class="pending">${fmtSize(f.size)} · uploads when you publish</small>`
+                  : `<b>${esc(fileOf(m) || 'No file yet')}</b><small>${localPath(m.url) ? 'Hosted on your site' : (m.url ? 'External link' : 'Add a file so people can download it')} · drop a file here to replace</small>`}
+            </div>
+            ${f ? '<button class="btn btn-ghost btn-xs" data-act="unfile">Undo</button>' : ''}
+            <label class="btn btn-primary btn-xs" style="cursor:pointer"><input type="file" data-act="file" hidden><span>${m.url || f ? 'Replace file' : 'Choose file'}</span></label>
+          </div>
+          <div class="row2">
+            <label class="field"><span>Name</span><input class="in" data-f="name" value="${esc(m.name)}"></label>
+            <label class="field"><span>Minecraft version</span><input class="in" data-f="mc" value="${esc(m.mc || '1.21.11')}"></label>
+          </div>
+          <label class="field"><span>Description</span><textarea class="ta" data-f="description">${esc(m.description)}</textarea></label>
+          <div class="row2">
+            <label class="field"><span>Badges</span><input class="in" data-f="badges" value="${esc((m.badges || []).join(', '))}" placeholder="New, v1.0"><small>Comma separated. "New" glows.</small></label>
+            <label class="field"><span>Warning note</span><input class="in" data-f="note" value="${esc(m.note)}" placeholder="Optional — e.g. Requires Meteor Client"></label>
+          </div>
+          <label class="check" style="margin:4px 0 14px"><input type="checkbox" data-f="featured" ${m.featured ? 'checked' : ''}> Featured — big card at the top of Downloads</label>
+          ${m.featured ? `<label class="field"><span>Feature list</span><textarea class="ta" data-f="features" placeholder="One per line">${esc((m.features || []).join('\n'))}</textarea><small>One per line. Shown on the featured card.</small></label>` : ''}
+          <div class="field"><span>Icon</span>
+            <div class="icons">${ICONS.map(ic => `<label title="${ic}"><input type="radio" name="icon-${k}" data-f="icon" value="${ic}" ${(m.icon || 'box') === ic ? 'checked' : ''}><span>${iconSvg(ic)}</span></label>`).join('')}</div>
+          </div>
+          <div class="field"><span>Colour</span>
+            <div class="color-row"><input type="color" data-f="accent" value="${rgbToHex(accentOf(m))}">
+              <div class="swatches">${SWATCHES.map(s => `<button type="button" data-act="swatch" data-v="${s}" style="background:rgb(${s})" title="rgb(${s})"></button>`).join('')}</div>
+            </div>
+          </div>
+          <details class="adv"><summary>Advanced</summary>
+            <label class="field"><span>Page anchor (ID)</span><input class="in" data-f="id" value="${esc(m.id)}"><small>Used for links like #${esc(m.id || 'my-mod')}.</small></label>
+            <label class="field"><span>Download link</span><input class="in" data-f="url" value="${esc(m.url)}"><small>Set automatically when you upload a file. Only change this to use an outside link.</small></label>
+          </details>
+          <button class="btn btn-danger btn-xs" data-act="delete"><svg class="ic"><use href="#i-x"/></svg><span>Remove mod</span></button>
+        </div>
+      </article>`;
+    }).join('') || '<div class="box card" style="text-align:center;color:var(--text-dim)">No mods yet — click <b>Add mod</b>.</div>';
+  }
+
+  function refreshHeader(card, m) {
+    const f = pending.get(m._key);
+    card.style.setProperty('--acc', accentOf(m));
+    card.querySelector('.med-t b').textContent = m.name || 'Untitled mod';
+    card.querySelector('.med-t small').textContent = f ? f.name + ' (new)' : fileOf(m) || 'No file yet';
+    card.querySelector('.med-ic').innerHTML = iconSvg(m.icon);
+  }
+
+  /* ---------- Mod events ---------- */
+  const modByCard = card => data.mods.find(m => m._key === +card.dataset.key);
+
+  $('#mod-list').addEventListener('input', e => {
+    const el = e.target, card = el.closest('.med'), f = el.dataset.f;
+    if (!card || !f) return;
+    const m = modByCard(card);
+    if (f === 'badges') m.badges = el.value.split(',').map(s => s.trim()).filter(Boolean);
+    else if (f === 'features') m.features = el.value.split('\n').map(s => s.trim()).filter(Boolean);
+    else if (f === 'featured') { m.featured = el.checked; renderMods(); }
+    else if (f === 'accent') m.accent = hexToRgb(el.value);
+    else if (f === 'icon') m.icon = el.value;
+    else m[f] = el.value;
+    if (f === 'name' && m._autoId) m.id = slug(m.name);
+    if (f === 'id') delete m._autoId;
+    if (f !== 'featured') refreshHeader(card, m);
+    updatePub();
+  });
+
+  $('#mod-list').addEventListener('change', e => {
+    const el = e.target;
+    if (el.dataset.act === 'file' && el.files[0]) setFile(el.closest('.med'), el.files[0]);
+    else if (el.dataset.f === 'featured' || el.dataset.f === 'icon') el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  $('#mod-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.tagName === 'INPUT') return;
+    const card = b.closest('.med'); if (!card) return;
+    const m = modByCard(card), i = data.mods.indexOf(m), act = b.dataset.act;
+    if (act === 'toggle') {
+      if (e.target.closest('.med-act') && b.classList.contains('med-h')) return;
+      openKeys.has(m._key) ? openKeys.delete(m._key) : openKeys.add(m._key);
+      card.classList.toggle('open');
+    } else if (act === 'up' || act === 'down') {
+      e.stopPropagation();
+      const j = act === 'up' ? i - 1 : i + 1;
+      if (j < 0 || j >= data.mods.length) return;
+      [data.mods[i], data.mods[j]] = [data.mods[j], data.mods[i]];
+      renderMods(); updatePub();
+    } else if (act === 'delete') {
+      if (!window.confirm(`Remove ${m.name || 'this mod'} from the site?`)) return;
+      data.mods.splice(i, 1); pending.delete(m._key); renderMods(); updatePub();
+    } else if (act === 'unfile') {
+      pending.delete(m._key); renderMods(); updatePub();
+    } else if (act === 'swatch') {
+      m.accent = b.dataset.v; card.querySelector('[data-f=accent]').value = rgbToHex(m.accent);
+      refreshHeader(card, m); updatePub();
+    }
+  });
+
+  function setFile(card, file) {
+    if (file.size > MAX_FILE) { window.alert(`${file.name} is ${fmtSize(file.size)} — the limit is 95 MB.`); return; }
+    const m = modByCard(card);
+    pending.set(m._key, file);
+    openKeys.add(m._key);
+    renderMods(); updatePub();
+  }
+
+  // Drag & drop onto a mod
+  $('#mod-list').addEventListener('dragover', e => { const box = e.target.closest('.med'); if (!box) return; e.preventDefault(); box.querySelector('[data-drop]')?.classList.add('drag'); });
+  $('#mod-list').addEventListener('dragleave', e => { const box = e.target.closest('[data-drop]'); if (box && !box.contains(e.relatedTarget)) box.classList.remove('drag'); });
+  $('#mod-list').addEventListener('drop', e => {
+    const card = e.target.closest('.med'); if (!card) return;
+    e.preventDefault();
+    const f = e.dataTransfer.files[0]; if (f) setFile(card, f);
+  });
+
+  $('#add-mod').addEventListener('click', () => {
+    const m = { _key: ++keySeq, _autoId: true, id: 'new-mod', name: 'New mod', icon: 'box', accent: '139, 92, 246', featured: false,
+      badges: ['New'], description: 'Join the Discord for the full breakdown.', features: [], note: '', mc: '1.21.11', file: '', url: '' };
+    data.mods.push(m); openKeys.add(m._key); renderMods(); updatePub();
+    document.querySelector(`.med[data-key="${m._key}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  /* ---------- Announcement ---------- */
+  function renderAnnouncement() {
+    const a = data.announcement;
+    $('#ann-enabled').checked = !!a.enabled;
+    $('#ann-tag').value = a.tag || ''; $('#ann-title').value = a.title || ''; $('#ann-text').value = a.text || '';
+    $('#ann-more').value = a.more || ''; $('#ann-linktext').value = a.linkText || '';
+    const opts = [['', 'No button'], ['#downloads', 'Downloads section'], ...data.mods.map(m => ['#' + (m.id || slug(m.name)), m.name]), ['#discord', 'Discord section'], ['custom', 'Custom link…']];
+    const sel = $('#ann-link');
+    sel.innerHTML = opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('');
+    const known = opts.some(([v]) => v === (a.link || ''));
+    sel.value = known ? (a.link || '') : 'custom';
+    $('#ann-custom').value = known ? '' : (a.link || '');
+    $('#ann-custom-wrap').classList.toggle('hidden', known);
+    previewAnnouncement();
+  }
+  function previewAnnouncement() {
+    const a = data.announcement;
+    $('#ann-preview').innerHTML = a.enabled ? `<div class="announce"><div class="announce-inner">
+      <span class="announce-tag">${esc(a.tag || 'New')}</span>
+      <span class="announce-text"><b>${esc(a.title)}</b> ${esc(a.text)}<span class="announce-more">${esc(a.more)}</span></span>
+      ${a.link ? `<span class="announce-link">${esc(a.linkText || 'Learn more')}<svg class="ic"><use href="#i-arrow"/></svg></span>` : ''}
+    </div></div>` : '<div style="padding:12px 16px;color:var(--text-faint);font-size:.88rem">Announcement bar is hidden.</div>';
+  }
+  function annChanged() {
+    const a = data.announcement, sel = $('#ann-link').value;
+    a.enabled = $('#ann-enabled').checked;
+    a.tag = $('#ann-tag').value; a.title = $('#ann-title').value; a.text = $('#ann-text').value;
+    a.more = $('#ann-more').value; a.linkText = $('#ann-linktext').value;
+    a.link = sel === 'custom' ? $('#ann-custom').value.trim() : sel;
+    $('#ann-custom-wrap').classList.toggle('hidden', sel !== 'custom');
+    previewAnnouncement(); updatePub();
+  }
+  ['#ann-enabled', '#ann-tag', '#ann-title', '#ann-text', '#ann-more', '#ann-linktext', '#ann-link', '#ann-custom']
+    .forEach(s => { $(s).addEventListener('input', annChanged); $(s).addEventListener('change', annChanged); });
+
+  /* ---------- Links ---------- */
+  function renderLinks() { $('#lk-discord').value = data.links.discord || ''; $('#lk-youtube').value = data.links.youtube || ''; }
+  $('#lk-discord').addEventListener('input', e => { data.links.discord = e.target.value.trim(); updatePub(); });
+  $('#lk-youtube').addEventListener('input', e => { data.links.youtube = e.target.value.trim(); updatePub(); });
+
+  /* ---------- Theme ---------- */
+  function renderTheme() { document.querySelectorAll('input[name=theme]').forEach(r => { r.checked = r.value === theme; }); }
+  document.querySelectorAll('input[name=theme]').forEach(r => r.addEventListener('change', () => { theme = r.value; updatePub(); }));
+
+  /* ---------- Tabs ---------- */
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+    document.querySelectorAll('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t.dataset.tab));
+    if (t.dataset.tab === 'announce') renderAnnouncement();
+  }));
+
+  /* ---------- Publish ---------- */
+  function updatePub() {
+    const dirty = isDirty();
+    $('#pub').classList.toggle('show', dirty);
+    if (dirty) {
+      const n = pending.size;
+      $('#pub-txt').innerHTML = `<b>Unsaved changes</b>${n ? ` · ${n} file${n > 1 ? 's' : ''} to upload` : ''}`;
+    }
+  }
+
+  function validate() {
+    const ids = new Set();
+    for (const m of data.mods) {
+      if (!m.name || !m.name.trim()) return 'Every mod needs a name.';
+      m.id = slug(m.id || m.name);
+      while (ids.has(m.id)) m.id += '-2';
+      ids.add(m.id);
+      if (!m.url && !pending.has(m._key)) return `${m.name} has no download file yet — add one or remove the mod.`;
+    }
+    return null;
+  }
+
+  $('#discard').addEventListener('click', async () => {
+    if (!window.confirm('Throw away all unpublished changes?')) return;
+    await loadAll();
+  });
+
+  $('#publish').addEventListener('click', async () => {
+    const problem = validate();
+    if (problem) { window.alert(problem); return; }
+    const btn = $('#publish'); btn.disabled = true; $('#discard').disabled = true;
+    $('#log').innerHTML = '';
+    const stillUsed = p => data.mods.some(m => localPath(m.url) === p);
+    try {
+      // 1. Upload new files
+      for (const m of data.mods) {
+        const file = pending.get(m._key);
+        if (!file) continue;
+        const name = cleanName(file.name);
+        const path = `${FILE_DIR}/${name}`;
+        const oldPath = localPath(m.url);
+        log(`Uploading ${esc(name)} (${fmtSize(file.size)})…`);
+        const existing = await getFile(path);
+        await putFile(path, await fileToB64(file), `Admin: upload ${name} for ${m.name}`, existing && existing.sha);
+        m.url = path; m.file = name;
+        pending.delete(m._key);
+        log(`✓ ${esc(name)} uploaded`, 'ok');
+        if (oldPath && oldPath !== path && !stillUsed(oldPath)) {
+          const old = await getFile(oldPath);
+          if (old) { await deleteFile(oldPath, old.sha, `Admin: remove old ${oldPath.split('/').pop()}`); log(`✓ Removed old file ${esc(oldPath.split('/').pop())}`, 'ok'); }
+        }
+      }
+      // 2. Clean up files from removed mods
+      try {
+        const before = JSON.parse(original).mods || [];
+        for (const om of before) {
+          const p = localPath(om.url);
+          if (p && !stillUsed(p)) {
+            const old = await getFile(p);
+            if (old) { await deleteFile(p, old.sha, `Admin: remove ${p.split('/').pop()}`); log(`✓ Removed unused file ${esc(p.split('/').pop())}`, 'ok'); }
+          }
+        }
+      } catch (e) { log('Could not clean up an old file (not a problem): ' + esc(e.message)); }
+
+      // 3. Announcement id changes when its content changes, so it re-appears for everyone
+      const a = data.announcement, prevA = JSON.parse(original).announcement || {};
+      const sig = x => [x.enabled, x.tag, x.title, x.text, x.more, x.linkText, x.link].join('|');
+      if (sig(a) !== sig(prevA)) a.id = 'a' + Date.now().toString(36);
+
+      // 4. Theme
+      if (theme !== themeOriginal) {
+        log('Saving theme…');
+        const js = `// Set by the admin panel. "auto" = Halloween every October, or "default" / "halloween".\nwindow.VX_THEME = "${theme}";\n`;
+        const cur = await getFile(THEME_PATH);
+        await putFile(THEME_PATH, utf8ToB64(js), `Admin: theme → ${theme}`, cur && cur.sha);
+        themeOriginal = theme;
+        log('✓ Theme saved', 'ok');
+      }
+
+      // 5. Site data
+      const json = strip(data);
+      if (json !== original) {
+        log('Saving site settings…');
+        const cur = await getFile(DATA_PATH);
+        const res = await putFile(DATA_PATH, utf8ToB64(json), 'Admin: update site', cur && cur.sha);
+        dataSha = res.content.sha; original = json;
+        log('✓ Settings saved', 'ok');
+      }
+      const site = `https://${cfg.owner.toLowerCase()}.github.io/${cfg.repo}/`;
+      log(`<b>All done.</b> Your site updates in about a minute — <a href="${site}" target="_blank" rel="noopener">open the live site</a>.`, 'ok');
+      renderAll();
+    } catch (e) {
+      log('✗ ' + esc(e.message) + (e.status === 403 ? ' — your token needs “Contents: Read and write” on this repo.' : ''), 'bad');
+      log('Nothing after this point was saved. Fix the problem and press Publish again.', 'bad');
+      renderMods();
+    } finally {
+      btn.disabled = false; $('#discard').disabled = false; updatePub();
+    }
+  });
+
+  window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* ---------- Start ---------- */
+  (async () => {
+    let saved = null;
+    try { saved = JSON.parse(store.get('vx_admin') || 'null'); } catch (e) {}
+    if (saved && saved.token) { cfg = { ...DEFAULT_REPO, ...saved }; showLogin(); $('#login-err').textContent = 'Signing in…'; await signIn(); }
+    else showLogin();
+  })();
+})();
+</script>
+</body>
+</html>
