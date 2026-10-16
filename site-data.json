@@ -34,7 +34,7 @@
       "note": "",
       "mc": "1.21.11",
       "file": "vexxoprotect-v1.0-1.21.11.jar",
-      "url": "https://ts.buzzheavier.com/d/r905yzvtzah5?v=DCnPd-u34zpjkpk0hOvfWzOSEvCOqAMny1lfqmo62E7Nq8oE5Gmi4w4vNfjFVjsu57c0GbY_bSY_oXPUF6zqFEDzFTM0eR7Pjcke5oqpNgL-JL_yusFg2tTInX_H4GBbFXbShvV2EBojsHNmgX7CF-lFsVvnMNWT09ifZyfDRna8bUgnKspStTh7Oe8"
+      "url": "https://ts.buzzheavier.com/d/1wrpb0q52slg?v=cyZZVWCpPkA2JumE6_KOeulRMX1ovZr087o3DFOj_ne0PrTYksOINtL-N1wByB5IUtM5n_vvyd--777Vp7WsYR40UOu0Vcl8bHxsOLNy2v1vqrhwQ-rY9KOKKaUroS3THfwS5CH2ZiL4W8_rOz1FXwToAK_9PG0UQKsAvN-v7vnXWV_C-4oj1U3ziW0"
     },
     {
       "id": "meteor-client",
@@ -48,11 +48,11 @@
       "note": "Install Glazed alongside Meteor Client for full compatibility.",
       "mc": "1.21.11",
       "file": "meteor-client-1.21.11-81.jar",
-      "url": "https://ts.buzzheavier.com/d/3spbvs1cdav5?v=j5YxmydHFaoKB7s2o6S0KS7aY9002LRUnf5IrND98mamFtQmhP2KTGBLJ7XsWAKqfQdPMKCeY5sRbI65-trHxm5l4MlA7dv8euW_yLl603GMfqzj5bggA4QaCixoAAOKFwblsOoqk4wP4RS1qvV6D2bAmL3d3vXGrHvOmH84QCSM60WoT6FQ973Q"
+      "url": "https://ts.buzzheavier.com/d/b2z9f4g5v3hx?v=OfgcEOCfdObCOzJSALKo-zdb94Ic_R_s_2KwvHSubRTuFzO72qAfzVMF0hskBcNKoMO5GokE0GEwYT-GdcwMBsowoZd1O6G1xyUFEFr-9Bnx5iX-lpZHpRHtmn6EI4FWi9V9vgxmihRAWTdgWlLJWpEOal3ANSqo86UwfE1yfXaRSXGQ8UAhrMqj"
     },
     {
       "id": "glazed",
-      "name": "Glazed",
+      "name": "Glazed +Spoofer",
       "icon": "glazed",
       "accent": "56, 189, 248",
       "featured": false,
@@ -64,7 +64,7 @@
       "note": "Requires Meteor Client to work.",
       "mc": "1.21.11",
       "file": "glazed-1.21.11-v19.jar",
-      "url": "https://ts.buzzheavier.com/d/fk0cumsni36b?v=HiumShq-f0zw4wAKVMuS9D9NuY0LIG05kh3j8IgvsaBFg0mlGp_PjCeDtTJCyQAgtLp5DwZQW3hFBs2gM5uXbbNEh2H0nk0A58XXCcZxoCfNztXyEyovNNINpZ_lPEMeYlPv5QJZb1NIsxG0oscoScRJ5RgiO-ubH2MflniuoNgFFlzl"
+      "url": "https://ts.buzzheavier.com/d/jljndukw5by5?v=yZITFYmeUXB75F8K-NT1--SVO_tAdJywZJZC8mbe2MLH_3VrftjaEQ7TD9JDwYBBHaNXwizy7wWb9MsRhgOnAwB5kjqhdgPOMFz9xVzmzj7uM1C3v18uIx5XIoz19HuC2p3LVeXEu4rcecJ9Ed7mx6CG094T81sJIHoLO1No6G0tvJ-R"
     },
     {
       "id": "rig-master",
@@ -78,7 +78,7 @@
       "note": "",
       "mc": "1.21.11",
       "file": "Rigmaster-1.21.11-v3.jar",
-      "url": "https://ts.buzzheavier.com/d/c3xie5bog2lz?v=L3CsTR3NxrXJ8KqSxJ0k3eSO6OZXXhzPbF9WXVppyIU6nN7dnysaQGXx7ZeWMW--bNFVraTMM7IGvTD_uXmgVRxlZmo3_QLWwhyH38JenDClcHQ-f4Mi_O8eYZ2jUkDZVz-dInX2w_YShyXYT6VI9a0XEKD0edIlCpUyS7qcHK6uKYLc98yI-ECABCryMCib"
+      "url": "https://ts.buzzheavier.com/d/ei2q6eizjjcz?v=COHsOiHXs1YVAbskFN7OHV92UWRthK-KXM58-F3_4D6eyiu3fuEipiEgN1f1r9sTXxCTUF3LFEOxvjVilZ1Irx6gtDoPVb0xk2NczRcNn55Ehb_lNiTNctM6SKv6PwAQjJGAKP3EHRE7CwJZW5mWdxF3rf5rt7ztsUphTLzWBMW_SeAM7LdvhbhycSYz6gt8"
     },
     {
       "id": "tpa-macro-v2",
@@ -94,7 +94,7 @@
       "note": "",
       "mc": "1.21.11",
       "file": "Tpamacro-1.21.11-v1.jar",
-      "url": "https://ts.buzzheavier.com/d/gticf5spnvwb?v=xR8tkMVlOOh1Bh3YugjTQUgGklnfsyZ6oa9dcz668m1qYbIZBu5_sYh3BtfSkpWzcrAudG5IqvuWfniDpL5L9kTZHqy0WgcDNFDjcYOuNzAD_lEuVLX0aCqwZ0ga5FZHD4kfeEZ8Vr1uew6LHCqZJDQWZi176s9-V1agfOPEaa_jZ_uquO4"
+      "url": "https://ts.buzzheavier.com/d/kp5eisi51gxg?v=Se_wHGDK3VCNKlRii0Re9KDbGDkhflJGt-aTAIAyqlL9GSoc-6l_PdP2Bae9crqrFfRRCk2TlxgXydf8a9soeucCycSHXdIgV8sqPupfKI6EWbboEZeReG2ZfRda7nNuKVFmXzkVw0sa3MKnRTb_lqPxfi0QPCQTbRoukX2-hx3V5vFKtgo"
     }
   ]
 }
