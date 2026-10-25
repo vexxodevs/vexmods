@@ -746,107 +746,6 @@ code { font-family: var(--f-mono); font-size: 0.88em; padding: 1px 6px; border-r
    Christmas theme (auto in December) + the new site pieces
    ========================================================= */
 
-/* ---------- Christmas palette ---------- */
-.xmas {
-  --violet: #e8313f;
-  --violet-soft: #ff8d8d;
-  --violet-deep: #9f1239;
-  --violet-rgb: 232, 49, 63;
-  --pink: #35c489;
-  --pink-rgb: 53, 196, 137;
-  --gold: #f6cf6a;
-  --gold-rgb: 246, 207, 106;
-}
-.xmas .bg {
-  background:
-    radial-gradient(ellipse 150% 100% at 50% -20%, #3a6490 0%, #28496f 16%, #1a3453 36%, #102339 62%, #08121f 100%);
-}
-.xmas .a1 { background: rgba(255, 255, 255, 0.20); }
-.xmas .a2 { background: rgba(140, 200, 255, 0.22); }
-.xmas .a3 { background: rgba(232, 49, 63, 0.18); }
-/* everything sits a shade cooler and brighter in December */
-.xmas {
-  --text: #f2f8ff;
-  --text-dim: #c5d8ea;
-  --text-faint: #8ba6c0;
-  --hairline: rgba(206, 232, 255, 0.14);
-}
-.xmas .announce-tag { color: #2a0409; }
-.xmas .grad { background-image: linear-gradient(104deg, #ff6b6b 0%, #f6cf6a 46%, #35c489 100%); }
-.xmas .hero-title .grad { filter: drop-shadow(0 4px 22px rgba(246, 207, 106, .22)); }
-
-/* A cold sheen across the top of every card, like frost on glass. */
-.xmas .card::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(170deg, rgba(226, 244, 255, 0.11), transparent 42%);
-  opacity: 0.85;
-}
-.xmas .card { border-color: rgba(214, 236, 255, 0.14); }
-.xmas .dl {
-  background: linear-gradient(135deg, #e8313f, #a3122b 60%, #7f0f22);
-  box-shadow: 0 10px 28px -10px rgba(232, 49, 63, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-.xmas .dl:hover { box-shadow: 0 14px 34px -10px rgba(232, 49, 63, 0.9), inset 0 1px 0 rgba(255,255,255,0.3); }
-
-/* ---------- String lights along the very top ---------- */
-.xmas-decor {
-  position: fixed; left: 0; right: 0; top: var(--decor-top, 0px);
-  z-index: 90; pointer-events: none;
-  transition: top .35s ease;
-}
-.lights {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 0 clamp(8px, 4vw, 70px);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
-}
-.lights::before {
-  content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 16px;
-  border-bottom: 2px solid rgba(190, 215, 240, 0.35);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-}
-.lights span {
-  position: relative; width: 9px; height: 13px; border-radius: 0 0 50% 50% / 0 0 72% 72%;
-  margin-top: 8px; background: var(--bulb, #e8313f);
-  box-shadow: 0 0 10px 2px var(--bulb, #e8313f), inset 0 -2px 3px rgba(0, 0, 0, 0.3);
-  animation: bulbGlow 2.6s ease-in-out infinite;
-}
-.lights span::before {
-  content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-  width: 5px; height: 5px; border-radius: 1px; background: #7b8ba0;
-}
-.lights span:nth-child(4n + 1) { --bulb: #e8313f; animation-delay: 0s; }
-.lights span:nth-child(4n + 2) { --bulb: #35c489; animation-delay: .45s; }
-.lights span:nth-child(4n + 3) { --bulb: #f6cf6a; animation-delay: .9s; }
-.lights span:nth-child(4n + 4) { --bulb: #5aa9ff; animation-delay: 1.35s; }
-.lights span:nth-child(odd) { margin-top: 16px; }
-@keyframes bulbGlow {
-  0%, 100% { opacity: .45; box-shadow: 0 0 5px 1px var(--bulb), inset 0 -2px 3px rgba(0,0,0,.3); }
-  50%      { opacity: 1;   box-shadow: 0 0 16px 4px var(--bulb), inset 0 -2px 3px rgba(0,0,0,.3); }
-}
-
-/* ---------- Hanging baubles ---------- */
-.bauble {
-  position: absolute; top: -14px; width: 30px; height: 30px; z-index: 89; pointer-events: none;
-  transform-origin: 50% -140%;
-  animation: baubleSway 5.5s ease-in-out infinite alternate;
-}
-.bauble svg { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55)); }
-.bauble::before {
-  content: ""; position: absolute; left: 50%; bottom: 100%; width: 1px;
-  background: linear-gradient(rgba(190, 215, 240, 0), rgba(190, 215, 240, 0.5));
-}
-.bb1 { left: 7%;  color: #e8313f; margin-top: 108px; animation-duration: 5.5s; }
-.bb1::before { height: 108px; }
-.bb2 { left: 46%; color: #f6cf6a; margin-top: 146px; width: 23px; height: 23px; animation-duration: 7s; animation-delay: -2s; }
-.bb2::before { height: 146px; }
-.bb3 { left: 93%; color: #35c489; margin-top: 92px; width: 25px; height: 25px; animation-duration: 6.2s; animation-delay: -4s; }
-.bb3::before { height: 92px; }
-@media (max-width: 860px) { .bb2 { display: none; } .bb1 { left: 5%; } .bb3 { left: 92%; } }
-@keyframes baubleSway { from { rotate: -7deg; } to { rotate: 7deg; } }
-
-/* Christmas easter-egg confetti falls as snow instead of sparks. */
-.egg.egg-snow { background: #fff; box-shadow: 0 0 10px 2px rgba(226, 244, 255, 0.9); }
-
 /* ---------- Open source pill ---------- */
 .os-tag {
   display: inline-flex; align-items: center; gap: 5px;
@@ -857,7 +756,6 @@ code { font-family: var(--f-mono); font-size: 0.88em; padding: 1px 6px; border-r
   letter-spacing: 0.02em; white-space: nowrap;
 }
 .os-tag .ic { width: 13px; height: 13px; stroke-width: 2.2; }
-.xmas .os-tag { border-color: rgba(53, 196, 137, 0.4); color: #72e3b0; background: rgba(53, 196, 137, 0.12); }
 
 /* ---------- Download safety hint under each button ---------- */
 .dl-hint {
@@ -880,38 +778,6 @@ code { font-family: var(--f-mono); font-size: 0.88em; padding: 1px 6px; border-r
   background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
-/* ---------- Search ---------- */
-.mod-search {
-  position: relative; display: flex; align-items: center; gap: 10px;
-  max-width: 440px; margin: 0 0 26px;
-  padding: 11px 14px; border-radius: 13px;
-  border: 1px solid var(--hairline); background: rgba(255, 255, 255, 0.03);
-  transition: border-color .2s, box-shadow .2s, background .2s;
-}
-.mod-search:focus-within {
-  border-color: rgba(var(--violet-rgb), 0.5);
-  box-shadow: 0 0 0 4px rgba(var(--violet-rgb), 0.12);
-  background: rgba(255, 255, 255, 0.05);
-}
-.mod-search .ic { width: 17px; height: 17px; color: var(--text-faint); flex: none; }
-.mod-search input {
-  flex: 1; min-width: 0; border: 0; background: none; outline: none;
-  color: var(--text); font: inherit; font-size: 0.93rem;
-}
-.mod-search input::-webkit-search-cancel-button { filter: invert(.6); }
-.mod-search kbd {
-  font-family: var(--f-mono); font-size: 0.72rem; color: var(--text-faint);
-  padding: 2px 7px; border-radius: 6px;
-  border: 1px solid var(--hairline); background: rgba(255, 255, 255, 0.05);
-}
-.mod-search:focus-within kbd { opacity: 0; }
-.mod.filtered-out { display: none !important; }
-.search-empty { color: var(--text-dim); margin: -8px 0 24px; font-size: 0.93rem; }
-.search-empty button {
-  border: 0; background: none; color: var(--violet-soft); font: inherit;
-  font-weight: 700; cursor: pointer; text-decoration: underline;
-}
-
 /* ---------- Scroll progress ---------- */
 .scroll-progress { position: fixed; inset: 0 0 auto; height: 2px; z-index: 300; pointer-events: none; }
 .scroll-progress span {
@@ -921,83 +787,134 @@ code { font-family: var(--f-mono); font-size: 0.88em; padding: 1px 6px; border-r
   will-change: transform;
 }
 
+/* =========================================================
+   Christmas theme — a quiet, snowy white wood (auto in December)
+   ========================================================= */
+
+/* Almost no colour: frost, silver and pale ice blue. */
+.xmas {
+  --violet: #d7e9fa;
+  --violet-soft: #f0f8ff;
+  --violet-deep: #9db8cf;
+  --violet-rgb: 215, 233, 250;
+  --pink: #b9d6ef;
+  --pink-rgb: 185, 214, 239;
+
+  --text: #f4f9ff;
+  --text-dim: #c3d6e6;
+  --text-faint: #8aa2b6;
+  --hairline: rgba(216, 236, 255, 0.15);
+  --hairline-bright: rgba(216, 236, 255, 0.28);
+  --glass: rgba(226, 242, 255, 0.045);
+  --glass-2: rgba(226, 242, 255, 0.075);
+}
+
+/* A cold white sky that deepens behind the content so text stays readable. */
+.xmas .bg {
+  background:
+    radial-gradient(ellipse 150% 115% at 50% -28%,
+      #9ab8d0 0%, #7e9cb6 10%, #5e7b94 24%, #42596f 44%, #27374a 68%, #121b26 100%);
+}
+.xmas .a1 { background: rgba(255, 255, 255, 0.16); }
+.xmas .a2 { background: rgba(196, 223, 246, 0.16); }
+.xmas .a3 { background: rgba(255, 255, 255, 0.10); }
+.xmas #stars { opacity: 0.5; }
+
+/* Frost along the top edge of every card. */
+.xmas .card { border-color: rgba(216, 236, 255, 0.16); }
+.xmas .card::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(168deg, rgba(232, 246, 255, 0.12), transparent 40%);
+}
+.xmas .dl {
+  background: linear-gradient(135deg, #ffffff, #d7e9fa 58%, #b7d2e8);
+  color: #16293c;
+  box-shadow: 0 10px 26px -12px rgba(190, 220, 245, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.xmas .dl .ic { color: #16293c; }
+.xmas .dl:hover { box-shadow: 0 14px 32px -12px rgba(205, 230, 250, 0.9), inset 0 1px 0 #fff; }
+.xmas .eyebrow { color: #cfe4f6; }
+/* Pale buttons need dark lettering to stay readable. */
+.xmas .btn-primary, .xmas .brand-mark, .xmas .discord-ic, .xmas .announce-tag { color: #16293c; }
+.xmas .btn-primary { box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 10px 26px -10px rgba(190,220,245,.6); }
+.xmas .btn-primary .ic, .xmas .discord-ic .ic { color: #16293c; }
+.xmas .skip-link { color: #16293c; }
+.xmas .announce-tag { color: #1b2d40; }
+.xmas .tags span { border-color: rgba(216, 236, 255, 0.2); background: rgba(232, 246, 255, 0.06); }
+.xmas .scroll-progress span { background: linear-gradient(90deg, #cfe4f6, #ffffff); }
+
+/* ---------- The wood: two rows of snowy pines and a drift ---------- */
+.xmas-forest {
+  position: fixed; left: 0; right: 0; bottom: 0; height: 190px;
+  z-index: -1; pointer-events: none;
+}
+.xmas-forest svg { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; display: block; }
+.xmas-forest .trees-far  { height: 150px; filter: blur(1.4px); opacity: 0.55; }
+.xmas-forest .trees-near { height: 180px; filter: drop-shadow(0 -2px 10px rgba(180, 214, 240, 0.18)); }
+.xmas-forest .drift { height: 72px; }
+
+/* ---------- String lights: warm white, no fairground colours ---------- */
+.xmas-decor {
+  position: fixed; left: 0; right: 0; top: var(--decor-top, 0px);
+  z-index: 90; pointer-events: none; transition: top .35s ease;
+}
+.lights {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 0 clamp(8px, 4vw, 70px);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+}
+.lights::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 15px;
+  border-bottom: 2px solid rgba(206, 232, 255, 0.3);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+.lights span {
+  position: relative; width: 8px; height: 12px; border-radius: 0 0 50% 50% / 0 0 72% 72%;
+  margin-top: 8px; background: #fff6e2;
+  box-shadow: 0 0 10px 2px rgba(255, 240, 210, 0.8);
+  animation: bulbGlow 3.4s ease-in-out infinite;
+}
+.lights span::before {
+  content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 5px; border-radius: 1px; background: #8ba0b4;
+}
+.lights span:nth-child(3n + 2) { animation-delay: .9s; }
+.lights span:nth-child(3n + 3) { animation-delay: 1.8s; }
+.lights span:nth-child(odd) { margin-top: 15px; }
+@keyframes bulbGlow {
+  0%, 100% { opacity: .5; box-shadow: 0 0 5px 1px rgba(255, 240, 210, .5); }
+  50%      { opacity: 1;  box-shadow: 0 0 14px 4px rgba(255, 240, 210, .85); }
+}
+
+/* ---------- Three small silver baubles ---------- */
+.bauble {
+  position: absolute; top: -14px; width: 24px; height: 24px; pointer-events: none;
+  color: #e4f0fb; transform-origin: 50% -140%;
+  animation: baubleSway 6s ease-in-out infinite alternate;
+}
+.bauble svg { width: 100%; height: 100%; filter: drop-shadow(0 5px 9px rgba(10, 22, 36, 0.5)); }
+.bauble::before {
+  content: ""; position: absolute; left: 50%; bottom: 100%; width: 1px;
+  background: linear-gradient(rgba(206, 232, 255, 0), rgba(206, 232, 255, 0.45));
+}
+.bb1 { left: 7%;  margin-top: 104px; }
+.bb1::before { height: 104px; }
+.bb2 { left: 46%; margin-top: 142px; width: 20px; height: 20px; animation-duration: 7.4s; animation-delay: -2s; }
+.bb2::before { height: 142px; }
+.bb3 { left: 93%; margin-top: 88px;  width: 21px; height: 21px; animation-duration: 6.6s; animation-delay: -4s; }
+.bb3::before { height: 88px; }
+@keyframes baubleSway { from { rotate: -6deg; } to { rotate: 6deg; } }
+
+.egg.egg-snow { background: #fff; box-shadow: 0 0 10px 2px rgba(226, 244, 255, 0.9); }
+
+@media (max-width: 860px) { .bb2 { display: none; } .bb1 { left: 5%; } .bb3 { left: 92%; } }
+@media (max-width: 760px) {
+  .xmas-forest { height: 130px; }
+  .xmas-forest .trees-far { height: 104px; }
+  .xmas-forest .trees-near { height: 124px; }
+  .xmas-forest .drift { height: 54px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .lights span, .bauble { animation: none !important; }
-  .lights span { opacity: 0.9; }
-}
-
-/* ---------- Christmas: snow on the ground, a snowman, and Santa ---------- */
-/* Sits with the background, like the Halloween spiders, so it never covers content. */
-.xmas-scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-
-/* The snow bank and the snowman sit in front, along the very bottom edge. */
-.xmas-ground {
-  position: fixed; left: 0; right: 0; bottom: 0; height: 96px;
-  z-index: 2; pointer-events: none;
-}
-.xmas-ground .drift {
-  position: absolute; inset: auto 0 0; width: 100%; height: 96px; display: block;
-  filter: drop-shadow(0 -6px 18px rgba(130, 180, 230, 0.22));
-}
-
-.snowman {
-  position: absolute; right: 8px; bottom: 6px;
-  width: 74px; height: 106px;
-  filter: drop-shadow(0 8px 16px rgba(4, 12, 24, 0.55));
-  animation: snowmanBob 4.5s ease-in-out infinite;
-  transform-origin: 50% 100%;
-}
-.snowman svg { width: 100%; height: 100%; display: block; }
-@keyframes snowmanBob { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
-
-/* Santa crosses the sky every so often, the way the bats used to. */
-.santa {
-  position: absolute; left: -200px; top: 16%;
-  width: 150px; height: 56px;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
-  animation: santaFly 26s linear infinite;
-}
-.santa svg { width: 100%; height: 100%; display: block; }
-@keyframes santaFly {
-  0%        { transform: translate(0, 0) rotate(-3deg); opacity: 0; }
-  6%        { opacity: 1; }
-  25%       { transform: translate(30vw, -40px) rotate(2deg); }
-  50%       { transform: translate(58vw, 18px) rotate(-2deg); }
-  75%       { transform: translate(86vw, -30px) rotate(3deg); }
-  94%       { opacity: 1; }
-  100%      { transform: translate(calc(100vw + 260px), 6px) rotate(-2deg); opacity: 0; }
-}
-
-/* Snow settles on the top edge of every card. */
-.xmas .card { overflow: visible; }
-.xmas .card::after {
-  content: ""; position: absolute; left: -1px; right: -1px; top: -7px; height: 15px;
-  pointer-events: none; z-index: 3;
-  background:
-    radial-gradient(10px 10px at 12px 11px, #fff 58%, transparent 60%),
-    radial-gradient(13px 12px at 42px 10px, #fff 58%, transparent 60%),
-    radial-gradient(9px 9px at 74px 12px, #fff 58%, transparent 60%),
-    radial-gradient(14px 12px at 108px 10px, #fff 58%, transparent 60%),
-    linear-gradient(#fff, #e8f3ff);
-  -webkit-mask-image: linear-gradient(#000 62%, transparent 100%);
-  mask-image: linear-gradient(#000 62%, transparent 100%);
-  border-radius: var(--r-card, 18px) var(--r-card, 18px) 0 0 / 14px 14px 0 0;
-  opacity: .92;
-}
-.xmas .mod-search, .xmas .notice { position: relative; }
-
-/* White and icy rather than purple */
-.xmas .eyebrow { color: #bcdcff; }
-.xmas .tags span { border-color: rgba(206, 232, 255, 0.2); background: rgba(226, 242, 255, 0.07); }
-.xmas .scroll-progress span { background: linear-gradient(90deg, #e8313f, #fff 50%, #35c489); }
-.xmas .totop { border-color: rgba(206, 232, 255, 0.28); }
-
-@media (max-width: 760px) {
-  .snowman { width: 54px; height: 78px; bottom: 4px; right: 4px; }
-  .xmas-ground, .xmas-ground .drift { height: 70px; }
-  .santa { width: 108px; height: 40px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .santa { animation: none; opacity: 0; }
-  .snowman { animation: none; }
+  .lights span { opacity: .9; }
 }

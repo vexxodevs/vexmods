@@ -556,7 +556,10 @@
   }
 
   /* ---------- Render ---------- */
-  function renderAll() { renderMods(); renderAnnouncement(); renderLinks(); renderFiles(); renderTheme(); }
+  function renderAll() {
+    if (data && data.theme !== theme) { data.theme = theme; original = strip(data); }
+    renderMods(); renderAnnouncement(); renderLinks(); renderFiles(); renderTheme();
+  }
 
   function iconSvg(name) { return `<svg><use href="#m-${ICONS.includes(name) ? name : 'box'}"/></svg>`; }
 
@@ -801,7 +804,11 @@
     const link = $('#theme-preview');
     if (link) link.href = site + (theme === 'auto' ? '' : `?theme=${theme === 'default' ? 'default' : theme}`);
   }
-  document.querySelectorAll('input[name=theme]').forEach(r => r.addEventListener('change', () => { theme = r.value; renderTheme(); updatePub(); }));
+  document.querySelectorAll('input[name=theme]').forEach(r => r.addEventListener('change', () => {
+    theme = r.value;
+    if (data) data.theme = theme;      // site-data.json is never cached, so this one always lands
+    renderTheme(); updatePub();
+  }));
 
   /* ---------- Tabs ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {

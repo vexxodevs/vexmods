@@ -1,4 +1,5 @@
 {
+  "theme": "auto",
   "announcement": {
     "enabled": true,
     "id": "spawner-protect-v1",

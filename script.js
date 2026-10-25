@@ -5,12 +5,13 @@
 // =========================================================
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isHalloween = document.documentElement.classList.contains('halloween');
-const isXmas = document.documentElement.classList.contains('xmas');
+let isHalloween = document.documentElement.classList.contains('halloween');
+let isXmas = document.documentElement.classList.contains('xmas');
 
 document.addEventListener('DOMContentLoaded', async () => {
+  await loadSiteData(); // mods, theme and settings from site-data.json (edited in admin.html)
+  buildDecor();
   initStars();
-  await loadSiteData(); // mods + settings from site-data.json (edited in admin.html)
   initAnnouncement();
   initNav();
   initReveal();
@@ -23,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMobileBar();
   initEasterEgg();
   initScrollProgress();
-  initModSearch();
   initDecorOffset();
   const y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
@@ -338,6 +338,71 @@ function initMobileBar() {
 }
 
 /* ---------- Easter egg: click the "V" logo 5 times quickly ---------- */
+/* ---------- Seasonal decoration ----------
+   Built here rather than written into index.html, so a stale stylesheet can
+   never leave a pile of unstyled graphics on the page. */
+function buildDecor() {
+  document.querySelectorAll('.season-decor').forEach(el => el.remove());
+  if (isHalloween) buildSpiders();
+  if (isXmas) buildXmas();
+}
+
+function el(tag, cls, html) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (html != null) node.innerHTML = html;
+  return node;
+}
+
+function buildSpiders() {
+  const wrap = el('div', 'season-decor spiders');
+  wrap.setAttribute('aria-hidden', 'true');
+  for (let i = 1; i <= 5; i++) wrap.appendChild(el('span', `spider sp${i}`, '<svg><use href="#i-spider"/></svg>'));
+  document.body.appendChild(wrap);
+}
+
+function buildXmas() {
+  const decor = el('div', 'season-decor xmas-decor');
+  decor.setAttribute('aria-hidden', 'true');
+  const lights = el('div', 'lights');
+  for (let i = 0; i < 18; i++) lights.appendChild(document.createElement('span'));
+  decor.appendChild(lights);
+  for (let i = 1; i <= 3; i++) decor.appendChild(el('span', `bauble bb${i}`, '<svg><use href="#i-bauble"/></svg>'));
+  document.body.appendChild(decor);
+
+  // A snowy pine wood along the bottom of the window.
+  const forest = el('div', 'season-decor xmas-forest', `
+    <svg class="trees-far" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      ${pines(1440, 11, 126, 0.46)}
+    </svg>
+    <svg class="trees-near" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      ${pines(1440, 8, 176, 0.88, 84)}
+    </svg>
+    <svg class="drift" viewBox="0 0 1440 90" preserveAspectRatio="none">
+      <path d="M0 40c130-22 230 12 350 10s200-28 320-24 210 32 330 27 280-32 440-14v51H0Z" fill="#f2f8ff"/>
+      <path d="M0 58c140-16 240 8 370 6s210-20 330-16 220 24 340 20 240-20 400-10v32H0Z" fill="#ffffff"/>
+    </svg>`);
+  forest.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(forest);
+}
+
+/* A row of snow-covered pines: three stacked triangles each. */
+function pines(width, count, height, opacity, offset = 0) {
+  const step = width / count;
+  const base = 200;
+  let d = '';
+  for (let i = 0; i <= count; i++) {
+    const x = offset + i * step + ((i * 53) % 41) - 20;
+    const h = height * (0.72 + ((i * 29) % 28) / 100);
+    const w = h * 0.52;
+    // bottom, middle and top tier
+    d += `M${x - w * 0.50} ${base}L${x} ${base - h * 0.46}L${x + w * 0.50} ${base}Z`;
+    d += `M${x - w * 0.40} ${base - h * 0.30}L${x} ${base - h * 0.76}L${x + w * 0.40} ${base - h * 0.30}Z`;
+    d += `M${x - w * 0.27} ${base - h * 0.60}L${x} ${base - h}L${x + w * 0.27} ${base - h * 0.60}Z`;
+  }
+  return `<path d="${d}" fill="#ffffff" fill-opacity="${opacity}"/>`;
+}
+
 /* ---------- Hang the Christmas lights below the announcement bar ---------- */
 function initDecorOffset() {
   const decor = document.querySelector('.xmas-decor');
@@ -370,42 +435,6 @@ function initScrollProgress() {
   }, { passive: true });
   window.addEventListener('resize', update);
   update();
-}
-
-/* ---------- Filter the mods as you type ---------- */
-function initModSearch() {
-  const box = document.getElementById('mod-search');
-  const empty = document.getElementById('search-empty');
-  const clear = document.getElementById('search-clear');
-  if (!box) return;
-
-  const cards = () => Array.from(document.querySelectorAll('#featured-slot .mod, #mods-grid .mod'));
-
-  function apply() {
-    const q = box.value.trim().toLowerCase();
-    let shown = 0;
-    for (const card of cards()) {
-      const hit = !q || card.textContent.toLowerCase().includes(q);
-      card.classList.toggle('filtered-out', !hit);
-      if (hit) shown++;
-    }
-    if (empty) empty.classList.toggle('hidden', shown > 0);
-    document.body.classList.toggle('searching', !!q);
-  }
-
-  box.addEventListener('input', apply);
-  box.addEventListener('keydown', e => { if (e.key === 'Escape') { box.value = ''; apply(); box.blur(); } });
-  if (clear) clear.addEventListener('click', () => { box.value = ''; apply(); box.focus(); });
-
-  // "/" jumps to the search box, the way it does on GitHub
-  document.addEventListener('keydown', e => {
-    if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
-    const t = e.target;
-    if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-    e.preventDefault();
-    box.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
-    box.focus();
-  });
 }
 
 function initEasterEgg() {
@@ -554,13 +583,30 @@ async function loadSiteData() {
   let d;
   try {
     const r = await fetch('site-data.json', { cache: 'no-store' });
-    if (!r.ok) return;
+    if (!r.ok) { applyTheme(null); return; }
     d = await r.json();
-  } catch (e) { return; }
-  try { renderSite(d); } catch (e) { console.error('[vexxo] render failed', e); }
+  } catch (e) { applyTheme(null); return; }
+  try { renderSite(d); } catch (e) { console.error('[vexxo] render failed', e); applyTheme(null); }
+}
+
+/* The saved theme travels in site-data.json, which is fetched fresh every time,
+   so changing it in the admin panel shows up even if site-theme.js is cached. */
+function applyTheme(saved) {
+  if (new URLSearchParams(location.search).get('theme')) return;   // ?theme= wins
+  let t = saved || window.VX_THEME || 'auto';
+  if (t === 'auto') {
+    const m = new Date().getMonth();
+    t = m === 9 ? 'halloween' : m === 11 ? 'xmas' : 'default';
+  }
+  isHalloween = t === 'halloween';
+  isXmas = t === 'xmas';
+  const html = document.documentElement;
+  html.classList.toggle('halloween', isHalloween);
+  html.classList.toggle('xmas', isXmas);
 }
 
 function renderSite(d) {
+  applyTheme(d.theme);
   const mods = Array.isArray(d.mods) ? d.mods.filter(m => m && m.name) : [];
   const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
   const text = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
