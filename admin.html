@@ -345,10 +345,12 @@
 
         <!-- Theme -->
         <div data-pane="theme" class="hidden">
-          <div class="panel-h"><div><h2>Theme</h2><p>Seasonal look for the whole site.</p></div></div>
-          <label class="opt"><input type="radio" name="theme" value="auto"><span><b>Automatic</b><small>Halloween every October, normal the rest of the year.</small></span></label>
+          <div class="panel-h"><div><h2>Theme</h2><p>Seasonal look for the whole site.</p></div>
+            <a class="btn btn-ghost btn-sm" id="theme-preview" target="_blank" rel="noopener"><svg class="ic"><use href="#i-eye"/></svg><span>Preview</span></a></div>
+          <label class="opt"><input type="radio" name="theme" value="auto"><span><b>Automatic</b><small>Halloween every October, Christmas every December, normal the rest of the year.</small></span></label>
           <label class="opt"><input type="radio" name="theme" value="default"><span><b>Always normal</b><small>Purple Vexxo look all year.</small></span></label>
-          <label class="opt"><input type="radio" name="theme" value="halloween"><span><b>Always Halloween</b><small>Orange, bats and cobwebs — until you switch it back.</small></span></label>
+          <label class="opt"><input type="radio" name="theme" value="halloween"><span><b>Always Halloween</b><small>Orange, spiders and cobwebs — until you switch it back.</small></span></label>
+          <label class="opt"><input type="radio" name="theme" value="xmas"><span><b>Always Christmas</b><small>Red and green, falling snow, string lights and baubles.</small></span></label>
         </div>
 
         <!-- Activity -->
@@ -584,6 +586,10 @@
             <div><b>Updating</b><br><small>Turn on while you fix something — the download is hidden and the card says “Updating — back soon”.</small></div>
             <label class="switch" title="Updating"><input type="checkbox" data-f="updating" ${m.updating ? 'checked' : ''}><span></span></label>
           </div>
+          <div class="upd-row${m.openSource ? ' on' : ''}">
+            <div><b>Open source</b><br><small>Shows a small green “Open source” tag on the mod, so people know the code is public.</small></div>
+            <label class="switch" title="Open source"><input type="checkbox" data-f="openSource" ${m.openSource ? 'checked' : ''}><span></span></label>
+          </div>
           <div class="file-box" data-drop>
             <svg class="ic"><use href="#i-download"/></svg>
             <div class="file-info">
@@ -642,19 +648,20 @@
     else if (f === 'features') m.features = el.value.split('\n').map(s => s.trim()).filter(Boolean);
     else if (f === 'featured') { m.featured = el.checked; renderMods(); }
     else if (f === 'updating') { if (el.checked) m.updating = true; else delete m.updating; renderMods(); }
+    else if (f === 'openSource') { if (el.checked) m.openSource = true; else delete m.openSource; renderMods(); }
     else if (f === 'accent') m.accent = hexToRgb(el.value);
     else if (f === 'icon') m.icon = el.value;
     else m[f] = el.value;
     if (f === 'name' && m._autoId) m.id = slug(m.name);
     if (f === 'id') delete m._autoId;
-    if (f !== 'featured' && f !== 'updating') refreshHeader(card, m);
+    if (f !== 'featured' && f !== 'updating' && f !== 'openSource') refreshHeader(card, m);
     updatePub();
   });
 
   $('#mod-list').addEventListener('change', e => {
     const el = e.target;
     if (el.dataset.act === 'file' && el.files[0]) setFile(el.closest('.med'), el.files[0]);
-    else if (el.dataset.f === 'featured' || el.dataset.f === 'updating' || el.dataset.f === 'icon') el.dispatchEvent(new Event('input', { bubbles: true }));
+    else if (['featured', 'updating', 'openSource', 'icon'].includes(el.dataset.f)) el.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
   $('#mod-list').addEventListener('click', e => {
@@ -706,7 +713,7 @@
 
   $('#add-mod').addEventListener('click', () => {
     const m = { _key: ++keySeq, _autoId: true, id: 'new-mod', name: 'New mod', icon: 'box', accent: '139, 92, 246', featured: false,
-      badges: ['New'], description: 'Join the Discord for the full breakdown.', features: [], note: '', mc: '1.21.11', file: '', url: '' };
+      badges: ['New'], description: 'Join the Discord for the full breakdown.', features: [], note: '', mc: '1.21.11', file: '', url: '', openSource: false };
     data.mods.push(m); openKeys.add(m._key); renderMods(); updatePub();
     document.querySelector(`.med[data-key="${m._key}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
@@ -787,8 +794,14 @@
     return String(id);
   }
 
-  function renderTheme() { document.querySelectorAll('input[name=theme]').forEach(r => { r.checked = r.value === theme; }); }
-  document.querySelectorAll('input[name=theme]').forEach(r => r.addEventListener('change', () => { theme = r.value; updatePub(); }));
+  const THEME_NAMES = { auto: 'automatic', default: 'normal', halloween: 'Halloween', xmas: 'Christmas' };
+  function renderTheme() {
+    document.querySelectorAll('input[name=theme]').forEach(r => { r.checked = r.value === theme; });
+    const site = `https://${cfg.owner.toLowerCase()}.github.io/${cfg.repo}/`;
+    const link = $('#theme-preview');
+    if (link) link.href = site + (theme === 'auto' ? '' : `?theme=${theme === 'default' ? 'default' : theme}`);
+  }
+  document.querySelectorAll('input[name=theme]').forEach(r => r.addEventListener('change', () => { theme = r.value; renderTheme(); updatePub(); }));
 
   /* ---------- Tabs ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
@@ -976,9 +989,9 @@
       // 4. Theme
       if (theme !== themeOriginal) {
         log('Saving theme…');
-        const js = `// Set by the admin panel. "auto" = Halloween every October, or "default" / "halloween".\nwindow.VX_THEME = "${theme}";\n`;
+        const js = `// Set by the admin panel. "auto" = Halloween in October and Christmas in December.\n// Or pin it: "default", "halloween", "xmas".\nwindow.VX_THEME = "${theme}";\n`;
         const cur = await getFile(THEME_PATH);
-        await putFile(THEME_PATH, utf8ToB64(js), `Theme set to ${theme === 'auto' ? 'automatic' : theme}${by()}`, cur && cur.sha);
+        await putFile(THEME_PATH, utf8ToB64(js), `Theme set to ${THEME_NAMES[theme] || theme}${by()}`, cur && cur.sha);
         themeOriginal = theme;
         log('✓ Theme saved', 'ok');
       }

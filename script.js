@@ -6,6 +6,7 @@
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isHalloween = document.documentElement.classList.contains('halloween');
+const isXmas = document.documentElement.classList.contains('xmas');
 
 document.addEventListener('DOMContentLoaded', async () => {
   initStars();
@@ -21,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initToTop();
   initMobileBar();
   initEasterEgg();
+  initScrollProgress();
+  initModSearch();
+  initDecorOffset();
   const y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
 });
@@ -50,9 +54,9 @@ function initStars() {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const starRGB = isHalloween ? '255,205,160' : '232,224,255';
-  const trailRGB = isHalloween ? '255,150,70' : '236,220,255';
-  let w, h, stars = [], shooters = [];
+  const starRGB = isHalloween ? '255,205,160' : isXmas ? '226,240,255' : '232,224,255';
+  const trailRGB = isHalloween ? '255,150,70' : isXmas ? '255,236,190' : '236,220,255';
+  let w, h, stars = [], shooters = [], flakes = [];
 
   function resize() {
     w = window.innerWidth; h = window.innerHeight;
@@ -67,6 +71,43 @@ function initStars() {
       p: Math.random() * Math.PI * 2,
       vy: Math.random() * 0.06 + 0.01
     }));
+
+    // December: snow drifting down over the stars.
+    if (isXmas) {
+      const snowCount = Math.min(260, Math.floor((w * h) / 6200));
+      flakes = Array.from({ length: snowCount }, () => makeFlake(Math.random() * h));
+    } else {
+      flakes = [];
+    }
+  }
+
+  function makeFlake(y) {
+    const depth = Math.random();                 // 0 = far away, 1 = close
+    return {
+      x: Math.random() * w,
+      y: y == null ? -8 : y,
+      r: 0.9 + depth * 2.9,
+      a: 0.35 + depth * 0.6,
+      vy: 0.3 + depth * 1.15,
+      sway: 0.25 + Math.random() * 0.9,
+      phase: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.015
+    };
+  }
+
+  function drawSnow(t) {
+    for (const f of flakes) {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,255,255,${f.a})`;
+      ctx.arc(f.x + Math.sin(t * 0.0012 * f.sway + f.phase) * 14, f.y, f.r, 0, Math.PI * 2);
+      ctx.fill();
+      if (reduceMotion) continue;
+      f.y += f.vy;
+      f.x += f.spin * f.r;
+      if (f.y - f.r > h) Object.assign(f, makeFlake(null));
+      if (f.x < -20) f.x = w + 20;
+      if (f.x > w + 20) f.x = -20;
+    }
   }
 
   function spawn() {
@@ -85,6 +126,7 @@ function initStars() {
       ctx.fill();
       if (!reduceMotion) { s.y -= s.vy; if (s.y < -2) { s.y = h + 2; s.x = Math.random() * w; } }
     }
+    if (flakes.length) drawSnow(t);
     if (reduceMotion) return;
 
     if (Math.random() < 0.005 && shooters.length < 2) spawn();
@@ -201,7 +243,7 @@ function initCounters() {
 // the file and the visitor stays on this page. This only adds visual feedback —
 // it never blocks or changes the link itself.
 function initDownloads() {
-  document.querySelectorAll('.dl').forEach(btn => {
+  document.querySelectorAll('a.dl').forEach(btn => {
     btn.addEventListener('click', e => {
       if (!reduceMotion) {
         const r = btn.getBoundingClientRect();
@@ -296,6 +338,76 @@ function initMobileBar() {
 }
 
 /* ---------- Easter egg: click the "V" logo 5 times quickly ---------- */
+/* ---------- Hang the Christmas lights below the announcement bar ---------- */
+function initDecorOffset() {
+  const decor = document.querySelector('.xmas-decor');
+  if (!decor) return;
+  const place = () => {
+    const bar = document.getElementById('announce');
+    const h = bar && !bar.classList.contains('hidden') ? bar.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty('--decor-top', `${Math.round(h)}px`);
+  };
+  place();
+  window.addEventListener('resize', place);
+  // the bar can be dismissed, and then the lights should move up
+  const bar = document.getElementById('announce');
+  if (bar) new MutationObserver(place).observe(bar, { attributes: true, attributeFilter: ['class'] });
+  setTimeout(place, 600);
+}
+
+/* ---------- Thin progress bar showing how far down the page you are ---------- */
+function initScrollProgress() {
+  const bar = document.querySelector('#scroll-progress span');
+  if (!bar) return;
+  let ticking = false;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
+/* ---------- Filter the mods as you type ---------- */
+function initModSearch() {
+  const box = document.getElementById('mod-search');
+  const empty = document.getElementById('search-empty');
+  const clear = document.getElementById('search-clear');
+  if (!box) return;
+
+  const cards = () => Array.from(document.querySelectorAll('#featured-slot .mod, #mods-grid .mod'));
+
+  function apply() {
+    const q = box.value.trim().toLowerCase();
+    let shown = 0;
+    for (const card of cards()) {
+      const hit = !q || card.textContent.toLowerCase().includes(q);
+      card.classList.toggle('filtered-out', !hit);
+      if (hit) shown++;
+    }
+    if (empty) empty.classList.toggle('hidden', shown > 0);
+    document.body.classList.toggle('searching', !!q);
+  }
+
+  box.addEventListener('input', apply);
+  box.addEventListener('keydown', e => { if (e.key === 'Escape') { box.value = ''; apply(); box.blur(); } });
+  if (clear) clear.addEventListener('click', () => { box.value = ''; apply(); box.focus(); });
+
+  // "/" jumps to the search box, the way it does on GitHub
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+    e.preventDefault();
+    box.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+    box.focus();
+  });
+}
+
 function initEasterEgg() {
   const mark = document.querySelector('#brand .brand-mark');
   if (!mark) return;
@@ -308,18 +420,20 @@ function initEasterEgg() {
     if (clicks < 5) return;
     clicks = 0;
     burst(mark);
-    showToast(isHalloween ? 'Boo! You found the secret' : 'You found the secret', 'Made by Jimmy & John Co');
+    showToast(isHalloween ? 'Boo! You found the secret'
+      : isXmas ? 'Merry Christmas! You found the secret'
+      : 'You found the secret', 'Made by Jimmy & John Co');
   });
 
   function burst(el) {
     if (reduceMotion) return;
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    const count = isHalloween ? 14 : 26;
+    const count = isHalloween ? 14 : isXmas ? 30 : 26;
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
-      p.className = 'egg' + (isHalloween ? ' egg-bat' : '');
-      if (isHalloween) p.innerHTML = '<svg viewBox="0 0 32 16"><use href="#i-bat"/></svg>';
+      p.className = 'egg' + (isHalloween ? ' egg-spider' : isXmas ? ' egg-snow' : '');
+      if (isHalloween) p.innerHTML = '<svg viewBox="0 0 32 32"><use href="#i-spider"/></svg>';
       const ang = Math.random() * Math.PI * 2;
       const dist = 140 + Math.random() * 260;
       p.style.left = `${cx - 8}px`;
@@ -373,12 +487,26 @@ function youtubeId(u) {
 }
 
 function dlButton(m) {
+  if (m.updating) {
+    return `<span class="dl dl-off" aria-disabled="true"><svg class="ic"><use href="#i-clock"/></svg><span>Updating — back soon</span></span>`;
+  }
   const url = safeUrl(m.url);
   const local = !/^https?:/i.test(url);
   return `<a class="dl" href="${esc(url)}" ${local ? 'download' : 'rel="noreferrer"'} data-mod="${esc(m.name)}">
-    <svg class="ic"><use href="#i-download"/></svg><span>Download</span><svg class="ic arr"><use href="#i-arrow"/></svg></a>`;
+    <svg class="ic"><use href="#i-download"/></svg><span>Download</span><svg class="ic arr"><use href="#i-arrow"/></svg></a>
+    ${local ? '' : '<span class="dl-hint"><svg class="ic"><use href="#i-shield"/></svg>Adblocker on — ignore any other button on that page</span>'}`;
+}
+function ossTag(m) {
+  if (!m.openSource) return '';
+  return `<span class="os-tag" title="The code for this mod is public — anyone can read it">
+    <svg class="ic"><use href="#i-oss"/></svg><span>Open source</span></span>`;
+}
+
+function badgesFor(m) {
+  return (m.updating ? ['Updating'] : []).concat(m.badges || []);
 }
 function badgeHtml(b) {
+  if (b === 'Updating') return `<span class="badge badge-upd"><svg class="ic"><use href="#i-clock"/></svg>Updating</span>`;
   return `<span class="badge${/^new$/i.test(b) ? ' badge-new' : ''}">${esc(b)}</span>`;
 }
 function iconHtml(m) {
@@ -389,34 +517,34 @@ function iconHtml(m) {
 function featureCard(m, i) {
   const feats = (m.features || []).filter(Boolean).map((f, j) =>
     `<li><svg class="ic"><use href="#${FEATURE_ICONS[j % FEATURE_ICONS.length]}"/></svg>${esc(f)}</li>`).join('');
-  return `<article class="mod card feature reveal" id="${safeId(m.id, i)}" style="--acc: ${safeRgb(m.accent)}">
+  return `<article class="mod card feature reveal${m.updating ? ' is-updating' : ''}" id="${safeId(m.id, i)}" style="--acc: ${safeRgb(m.accent)}">
     <div class="feature-ic-wrap" aria-hidden="true">
       <span class="radar"><span></span><span></span><span></span></span>
       <span class="mod-ic feature-ic">${iconHtml(m)}</span>
     </div>
     <div class="feature-body">
-      ${(m.badges || []).length ? `<div class="feature-badges">${m.badges.map(badgeHtml).join('')}</div>` : ''}
+      ${badgesFor(m).length ? `<div class="feature-badges">${badgesFor(m).map(badgeHtml).join('')}</div>` : ''}
       <h3>${esc(m.name)}</h3>
       <p>${esc(m.description)}</p>
       ${feats ? `<ul class="feature-list">${feats}</ul>` : ''}
       ${m.note ? `<p class="mod-note"><svg class="ic"><use href="#i-alert"/></svg>${esc(m.note)}</p>` : ''}
     </div>
     <div class="feature-side">
-      <div class="tags"><span>MC ${esc(m.mc || '1.21.11')}</span><span>Fabric</span></div>
+      <div class="tags"><span>MC ${esc(m.mc || '1.21.11')}</span><span>Fabric</span>${ossTag(m)}</div>
       ${dlButton(m)}
     </div>
   </article>`;
 }
 
 function modCard(m, i, n) {
-  return `<article class="mod card reveal" data-delay="${n % 4}" id="${safeId(m.id, i)}" style="--acc: ${safeRgb(m.accent)}">
+  return `<article class="mod card reveal${m.updating ? ' is-updating' : ''}" data-delay="${n % 4}" id="${safeId(m.id, i)}" style="--acc: ${safeRgb(m.accent)}">
     <div class="mod-top">
       <span class="mod-ic">${iconHtml(m)}</span>
-      ${(m.badges || []).length ? `<span class="mod-badges">${m.badges.map(badgeHtml).join('')}</span>` : ''}
+      ${badgesFor(m).length ? `<span class="mod-badges">${badgesFor(m).map(badgeHtml).join('')}</span>` : ''}
     </div>
     <h3>${esc(m.name)}</h3>
     <p>${esc(m.description)}</p>
-    <div class="tags"><span>MC ${esc(m.mc || '1.21.11')}</span><span>Fabric</span></div>
+    <div class="tags"><span>MC ${esc(m.mc || '1.21.11')}</span><span>Fabric</span>${ossTag(m)}</div>
     ${m.note ? `<p class="mod-note"><svg class="ic"><use href="#i-alert"/></svg>${esc(m.note)}</p>` : ''}
     ${dlButton(m)}
   </article>`;
@@ -445,10 +573,11 @@ function renderSite(d) {
     if (grid) grid.style.display = n ? '' : 'none';
 
     set('panel-rows', mods.slice(0, 6).map(m => {
-      const isNew = (m.badges || []).some(b => /^new$/i.test(b));
+      const isNew = !m.updating && (m.badges || []).some(b => /^new$/i.test(b));
+      const state = m.updating ? 'Updating' : isNew ? 'New' : 'Loaded';
       return `<div class="row" style="--acc: ${safeRgb(m.accent)}"><span class="row-ic">${iconHtml(m)}</span>
         <span class="row-txt"><b>${esc(m.name)}</b><small>${esc(fileName(m))}</small></span>
-        <span class="row-state${isNew ? ' new' : ''}">${isNew ? 'New' : 'Loaded'}</span></div>`;
+        <span class="row-state${m.updating ? ' upd' : isNew ? ' new' : ''}">${state}</span></div>`;
     }).join(''));
 
     const tail = ['Minecraft 1.21.11', 'Direct Downloads', 'No Redirects', 'Donut SMP', 'Always Free'];
