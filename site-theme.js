@@ -1,2 +1,3 @@
-// Set by the admin panel. "auto" = Halloween every October, or "default" / "halloween".
-window.VX_THEME = "auto";
+// Set by the admin panel. "auto" = Halloween in October and Christmas in December.
+// Or pin it: "default", "halloween", "xmas".
+window.VX_THEME = "xmas";
