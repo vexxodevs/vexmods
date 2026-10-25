@@ -26,41 +26,46 @@ Changes go live about a minute after you press **Publish**.
 
 ## Buzzheavier
 
-Downloads are hosted on buzzheavier.com.
+Downloads are hosted on buzzheavier.com. Four kinds of link can go on the site,
+picked in the uploader under **Settings → What link goes on your site**:
 
-A true direct link looks like `https://ts.buzzheavier.com/d/<id>?v=<long token>` — the
-one the download page's **Copy download link** button gives you. It is signed, so it
-cannot be guessed from the file id and it can stop working after a while.
+| Style | Looks like | Notes |
+|---|---|---|
+| Direct download | `ts.buzzheavier.com/d/<id>?v=…` | Starts the file straight away. Signed, so it can run out. |
+| Signed link | `buzzheavier.com/<id>/download?t=…` | Also signed. |
+| Plain download link | `buzzheavier.com/<id>/download` | Always works, never expires. |
+| Buzzheavier page | `buzzheavier.com/<id>` | Visitors click twice. |
 
-**Use the uploader app** to get those links and keep them alive:
+The first two have to be fetched from Buzzheavier each time, and Buzzheavier only
+hands them to a real browser — so the uploader is often refused. When that happens it
+still publishes the plain link, so a mod is never left without a download, and tells
+you in the activity log.
+
+To use a direct link anyway, press **Open page** on the mod, use Buzzheavier's own
+**Copy download link** button, then press **Paste link**. The mod is tagged *Pasted by
+hand* and the schedule leaves it alone.
+
+## The uploader
 
 ```
 python vexxo-uploader.py
 ```
 
-It opens a control panel in your browser.
+Opens a control panel in your browser.
 
-1. Open **Settings**, fill in your GitHub token and Buzzheavier account ID.
-2. Press **Choose file** on a mod and pick its .jar. It uploads, fetches the direct
-   link and puts it on your site. The uploader keeps a copy in `vexxo-files/`, so you
-   never have to find that file again.
+1. **Settings** — GitHub token, Buzzheavier account ID, link style.
+2. **Choose file** on a mod. It uploads, sets the link, and keeps a copy in
+   `vexxo-files/` so you never have to find that file again.
 3. Switch **Auto** on for that mod, then turn the **Schedule** on.
 
-From then on it does two jobs by itself:
+It then does two jobs on its own:
 
-- **Refresh the link** (every 6 hours by default) — fetches a fresh signed link for the
-  file already on Buzzheavier. Quick, and no re-upload.
-- **Re-upload the file** (every 2 days by default) — uploads the saved copy again.
+- **Refresh the link**, every 6 hours by default — only matters for the signed styles.
+- **Re-upload the file**, every 2 days by default, from the saved copy.
 
-Both intervals are dropdowns. Press **Check** on a mod at any time to see whether its
-current link still downloads.
+**Check** on a mod tells you whether its current link still downloads.
 
-The admin panel's **Files** tab can also upload to Buzzheavier, but a web page is not
-allowed to fetch the signed link, so it can only set the `buzzheavier.com/<id>/download`
-form. Use the uploader for direct links.
-
-The schedule only runs while the uploader is open. Settings live in
-`vexxo-uploader.json` next to the script; neither that file nor `vexxo-files/`
-belongs in the repo.
+The schedule only runs while the uploader is open. `vexxo-uploader.json` and
+`vexxo-files/` stay on your computer — don't put them in the repo.
 
 Made by Jimmy & John Co
