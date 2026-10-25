@@ -334,12 +334,12 @@
             <label class="field"><span>Folder ID <small style="text-transform:none;letter-spacing:0">(optional)</small></span><input class="in" id="buzz-parent" spellcheck="false" placeholder="Leave empty for the top level"><small>The ID of a folder in your Buzzheavier account to upload into.</small></label>
             <label class="field"><span>Link style</span>
               <select class="in" id="buzz-style">
-                <option value="direct">Direct download — the file starts downloading</option>
-                <option value="page">Buzzheavier page — opens their download page</option>
+                <option value="direct">buzzheavier.com/…/download</option>
+                <option value="page">Buzzheavier page</option>
               </select>
-              <small>Upload one mod, then press <b>Test</b> on it. If the file downloads straight away, keep this setting. If not, switch it and publish again.</small>
+              <small>Upload one mod, then press <b>Test</b> on it to see what visitors get.</small>
             </label>
-            <div class="note-box">Uploading happens in this browser. If Buzzheavier blocks it, the panel will say so and you can use the <b>vexxo-upload</b> script on your computer instead, then paste the link in yourself.</div>
+            <div class="note-box"><b>For true direct downloads</b> — the ts.buzzheavier.com link that starts the file straight away — use the <b>Vexxo Uploader</b> app on your computer. That link is signed and has to be fetched from Buzzheavier each time, which a web page isn't allowed to do. The uploader also refreshes it on a schedule so it never goes stale.</div>
           </div>
         </div>
 
