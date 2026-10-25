@@ -48,8 +48,9 @@
       "features": [],
       "note": "Install Glazed alongside Meteor Client for full compatibility.",
       "mc": "1.21.11",
-      "file": "meteor-client-1.21.11-81.jar",
-      "url": "https://ts.buzzheavier.com/d/g4pkwao4r6c9?v=deiRniA7ZcZdsh8BIaHkAEg4hZEeoNEhvHhDV3GbVIiyNnLDJf8OzUDsUQ2he1BSiEiAivhtkR0yRP8-tgdG1nvpXx-EOe5BrQepTBcTczKdmb7oCAEypW4-fPT-CZoz_wSvYPyKKY20hVGKb6aW3ubhXhBv8KIlTPY7LBxtZSRZl73eBndToyWE"
+      "file": "meteor-client-1.21.11-86.jar",
+      "url": "https://buzzheavier.com/vrtd5w00umyw/download",
+      "updating": false
     },
     {
       "id": "glazed",
